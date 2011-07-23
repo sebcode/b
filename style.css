@@ -1,0 +1,32 @@
+
+.entry {
+	display: block;
+	padding-bottom: 10px;
+	width: 100%;
+}
+
+header {
+	padding-bottom: 10px;
+}
+
+.entry:hover {
+	background-color: yellow;
+}
+
+.entry .title {
+	width: 100%;
+	cursor: pointer;
+}
+
+.entry .title:hover {
+	background-color: lime;
+}
+
+.entry .link {
+	padding-left: 20px;
+}
+
+input {
+	width: 600px;
+}
+
