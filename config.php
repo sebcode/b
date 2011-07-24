@@ -2,6 +2,6 @@
 
 return array(
 	'baseDir' => '/home/seb/.b/'
-	,'defaultUser' => 'seb'
+	,'baseUri' => '/b/'
 );
 

@@ -5,7 +5,7 @@ namespace B;
 require_once('BookmarkManager.php');
 
 try {
-	$b = new BookmarkManager();
+	$b = new BookmarkManager($_SERVER['REQUEST_URI']);
 	$b->handleAjaxRequest($_POST);
 
 	if (!empty($_GET['filter'])) {
@@ -31,7 +31,7 @@ try {
 
 <header>
 	<form>
-		<input autofocus type="text" name="query" value="" placeholder="http://... <- enter new url here and press return"/>
+		<input autofocus type="text" name="query" value="" placeholder="http://... <- enter new url here and press return | or enter filter query"/>
 	</form>
 </header>
 

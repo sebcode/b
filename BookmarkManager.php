@@ -10,7 +10,7 @@ class BookmarkManager
 	protected $user;
 	protected $baseDir;
 
-	public function __construct($user = false)
+	public function __construct($requestUri = '/')
 	{
 		$config = require(__DIR__ . '/config.php');
 
@@ -30,12 +30,34 @@ class BookmarkManager
 
 		$this->baseDir = rtrim($this->baseDir, '/') . '/';
 
-		if (empty($user)) {
-			if (empty($config['defaultUser'])) {
-				throw new \Exception('no default user specified');
-			}
+		if (empty($config['baseUri'])) {
+			throw new \Exception('baseUri not defined in config.php');
+		}
 
-			$user = $config['defaultUser'];
+		$baseUri = rtrim($config['baseUri'], '/') . '/';
+
+		if (strpos($requestUri, $baseUri) !== 0) {
+			throw new \Exception('invalid baseuri');
+		}
+
+		/* cut baseUri from request uri */
+		$uri = substr($requestUri, strlen($baseUri));
+
+		/* cut query string from request uri */
+		if (($p = strpos($uri, '?')) !== false) {
+			$uri = substr($uri, 0, $p);
+		}
+
+		$uriParts = explode('/', trim($uri, '/'));
+
+		if (count($uriParts) !== 1) {
+			throw new \Exception('invalid request');
+		}
+
+		$user = $uriParts[0];
+
+		if (!preg_match('@^[a-z0-9]+$@i', $user)) {
+			throw new \Exception('invalid user');
 		}
 
 		if (!is_dir($this->baseDir . $user)) {
