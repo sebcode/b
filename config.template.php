@@ -2,6 +2,6 @@
 
 return array(
 	'baseDir' => '/opt/bookmarks/'
-	,'defaultUser' => 'heinz'
+	,'baseUri' => '/b/'
 );
 
