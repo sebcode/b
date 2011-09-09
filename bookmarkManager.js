@@ -48,14 +48,25 @@ function setLink(id, link)
 	});
 }
 
-function addUrl(url)
+function addUrl(url, force)
 {
 	var input = $(':input');
 
 	input.attr('disabled', 'disabled');
 
-	$.post('', { action: 'add', url: url }, function(data) {
+	$.post('', { action: 'add', url: url, force: force ? '1' : '0' }, function(data) {
 		var data = JSON.parse(data);
+
+		if (!data.force && data.message === 'could not fetch') {
+			if (confirm('could not fetch, add anyway?')) {
+				addUrl(data.url, true);
+				return;
+			}
+		
+			input.removeAttr('disabled');
+			input.focus();
+			return;
+		}
 
 		if (data.message) {
 			alert(data.message);

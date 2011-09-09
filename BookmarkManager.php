@@ -99,8 +99,10 @@ class BookmarkManager
 		try {
 			switch ($action) {
 				case 'add':
+					$result['url'] = $postData['url'];
+					$result['force'] = $postData['force'] ? true : false;
 					list($url, $desc) = explode(' ', $postData['url'], 2);
-					$this->addBookmark($url, $desc);
+					$this->addBookmark($url, $desc, !empty($postData['force']));
 					$error = false;
 					break;
 
@@ -145,10 +147,21 @@ class BookmarkManager
 		exit();
 	}
 
-	public function addBookmark($url, $appendDesc = '')
+	public function addBookmark($url, $appendDesc = '', $force = false)
 	{
-		$body = $this->fetch($url);
-		$desc = $this->extractTitle($body) . ' ' . $appendDesc;
+		try {
+			$body = $this->fetch($url);
+		} catch (\Exception $e) {
+			if (!$force) {
+				throw $e;
+			}
+		}
+
+		if ($body) {
+			$desc = $this->extractTitle($body) . ' ' . $appendDesc;
+		} else {
+			$desc = $url;
+		}
 
 		return $this->db->add($desc, $url);
 	}
