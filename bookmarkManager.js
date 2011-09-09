@@ -76,15 +76,19 @@ $('.content').click(function(e) {
 	if (target && target.className === 'title') {
 		var id = target.parentNode.getAttribute('data-id');
 
-		var ret = prompt('rename, empty=delete', target.innerHTML);
+		var ret = prompt('rename, enter - to delete', target.innerHTML);
 
-		if (ret === null) {
+		if (!ret) {
 			return;
 		}
 
-		if (ret === '') {
-			deleteEntry(id);
-			return;
+		if (ret === '-') {
+			if (confirm('really delete?')) {
+				deleteEntry(id);
+				return;
+			} else {
+				return;
+			}
 		}
 
 		setTitle(id, ret);

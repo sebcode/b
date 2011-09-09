@@ -52,7 +52,7 @@ debian: apt-get install libapache2-mod-php5 php5-curl php5-sqlite
    is added to the db.
 
  * edit title by doubleclicking on it. this opens a prompt-dialog
-   where you can edit the title. if you leave the title blank,
+   where you can edit the title. if you enter '-' (minus sign)
    the entry will be removed from the db.
 
  * edit the url by doubleclicking beside the link.
