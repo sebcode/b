@@ -101,7 +101,7 @@ class BookmarkManager
 				case 'add':
 					$result['url'] = $postData['url'];
 					$result['force'] = $postData['force'] ? true : false;
-					list($url, $desc) = explode(' ', $postData['url'], 2);
+					list($url, $desc) = @explode(' ', $postData['url'], 2);
 					$this->addBookmark($url, $desc, !empty($postData['force']));
 					$error = false;
 					break;
@@ -157,7 +157,7 @@ class BookmarkManager
 			}
 		}
 
-		if ($body) {
+		if (!empty($body)) {
 			$desc = $this->extractTitle($body) . ' ' . $appendDesc;
 		} else {
 			$desc = $url;
