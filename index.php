@@ -38,7 +38,7 @@ try {
 <?php foreach ($entries as $entry): ?>
 
 <div class="entry" id="entry_<?php echo $entry['id']; ?>" data-id="<?php echo $entry['id']; ?>">
-	<div class="title"><?php echo htmlspecialchars($entry['desc']); ?></div>
+	<div class="title"><?php echo BookmarkManager::formatDesc($entry['desc']); ?></div>
 	<a class="link" target="_blank" href="<?php echo htmlspecialchars($entry['link']); ?>"><?php echo htmlspecialchars($entry['link']);  ?></a>
 </div>
 

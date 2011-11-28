@@ -199,5 +199,20 @@ class BookmarkManager
 		return $ret;
 	}
 
+	public static function formatDesc($desc)
+	{
+		$desc = htmlspecialchars($desc);
+
+		if (preg_match_all('@#[a-z0-9-_]+@', $desc, $m)) {
+			$matches = $m[0];
+
+			foreach ($matches as $match) {
+				$desc = str_replace($match, '<a href="?filter=' . rawurlencode($match) . '">' . $match . '</a>', $desc);
+			}
+		}
+
+		return $desc;
+	}
+
 }
 
