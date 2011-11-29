@@ -117,7 +117,8 @@ class BookmarkManager
 					if ($id && !empty($postData['title'])) {
 						$this->db->setTitle($id, $postData['title']);
 						$error = false;
-						$result['title'] = $postData['title'];
+						$result['title'] = self::formatDesc($postData['title']);
+						$result['rawTitle'] = $postData['title'];
 					}
 					break;
 

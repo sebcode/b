@@ -25,6 +25,7 @@ function setTitle(id, title)
 
 		if (data.result === true) {
 			$('#entry_' + data.id + ' .title').html(data.title);
+			$('#entry_' + data.id).attr('data-title', data.rawTitle);
 		} else {
 			alert('err');
 		}
@@ -85,9 +86,9 @@ $('.content').click(function(e) {
 	var target = e.target;
 
 	if (target && target.className === 'title') {
-		var id = target.parentNode.getAttribute('data-id');
-
-		var ret = prompt('rename, enter - to delete', target.innerHTML);
+		var id = target.parentNode.getAttribute('data-id')
+			,rawTitle = target.parentNode.getAttribute('data-title')
+			,ret = prompt('rename, enter - to delete', rawTitle);
 
 		if (!ret) {
 			return;
