@@ -183,19 +183,21 @@ class BookmarkManager
 		return $ret;
 	}
 
-	private function extractTitle($body)
+	public static function extractTitle($body)
 	{
 		if (!preg_match('@<title>([^<]+)@', $body, $m)) {
 			return '(unknown title)';
 		}
 
-		$ret = trim(html_entity_decode($m[1]));
+		$ret = $m[1];
 
 		$enc = mb_detect_encoding($ret, 'UTF-8,ISO-8859-1', true);
 
 		if ($enc !== 'UTF-8') {
 			$ret = mb_convert_encoding($ret, 'UTF-8', $enc);
 		}
+
+		$ret = trim(html_entity_decode($ret, ENT_QUOTES, 'UTF-8'));
 
 		return $ret;
 	}
