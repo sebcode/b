@@ -210,7 +210,7 @@ class BookmarkManager
 			$matches = $m[0];
 
 			foreach ($matches as $match) {
-				$desc = str_replace($match, '<a href="?filter=' . rawurlencode($match) . '">' . $match . '</a>', $desc);
+				$desc = str_replace($match, '<a class="hash" href="?filter=' . rawurlencode($match) . '">' . $match . '</a>', $desc);
 			}
 		}
 
