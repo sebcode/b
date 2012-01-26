@@ -2,6 +2,31 @@
 
 namespace B;
 
+if (isset($_GET['configtest'])) {
+	$requiredModules = array(
+		'sqlite3',
+		'curl',
+	);
+
+	$failed = false;
+
+	header('Content-type: text/plain');
+
+	foreach ($requiredModules as $module) {
+		if (!extension_loaded($module)) {
+			echo "PHP module missing: $module \n";
+			$failed = true;
+		}
+	}
+
+	if ($failed) {
+		exit(1);
+	}
+
+	echo "OK.";
+	exit(0);
+}
+
 require_once('BookmarkManager.php');
 
 try {

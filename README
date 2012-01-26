@@ -42,6 +42,8 @@ debian: apt-get install libapache2-mod-php5 php5-curl php5-sqlite
 
  * peter's bookmarks should now be accessible via http://example.com/b/peter
 
+ * test configuration via http://example.com/b/index.php?configtest
+
 :: how to use ::
 
  * to add a new bookmark, simply paste it into the input field and press
