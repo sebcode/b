@@ -48,6 +48,7 @@ try {
 
 ?>
 <!doctype html>
+<meta charset="utf-8">
 <title>b</title>
 
 <link rel="stylesheet" href="style.css"/>
