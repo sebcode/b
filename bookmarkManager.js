@@ -43,6 +43,7 @@ function setLink(id, link)
 
 		if (data.result === true) {
 			$('#entry_' + data.id + ' .link').html(data.link);
+			$('#entry_' + data.id + ' .link').attr('href', data.link);
 		} else {
 			alert('err');
 		}
