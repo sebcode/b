@@ -202,19 +202,45 @@ class BookmarkManager
 		return $ret;
 	}
 
-	public static function formatDesc($desc)
+	public static function formatDesc($desc, $withTags = true)
 	{
 		$desc = htmlspecialchars($desc);
 
 		if (preg_match_all('@#[a-z0-9-_]+@', $desc, $m)) {
 			$matches = $m[0];
 
-			foreach ($matches as $match) {
-				$desc = str_replace($match, '<a class="hash" href="?filter=' . rawurlencode($match) . '">' . $match . '</a>', $desc);
+			foreach ($matches as $tag) {
+				if ($withTags) {
+					$replaceWith = self::formatTagLink($match);
+				} else {
+					$replaceWith = '';
+				}
+				$desc = str_replace($tag, $replaceWith, $desc);
 			}
 		}
 
-		return $desc;
+		return trim($desc);
+	}
+
+	public static function formatTags($desc)
+	{
+		$tags = '';
+		$desc = htmlspecialchars($desc);
+
+		if (preg_match_all('@#[a-z0-9-_]+@', $desc, $m)) {
+			$matches = $m[0];
+
+			foreach ($matches as $tag) {
+				$tags .= self::formatTagLink($tag) . ' ';
+			}
+		}
+
+		return $tags;
+	}
+
+	public static function formatTagLink($tag)
+	{
+		return '<a class="hash" href="?filter=' . rawurlencode($tag) . '">' . $tag . '</a>';
 	}
 
 }

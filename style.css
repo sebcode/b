@@ -1,7 +1,14 @@
 
+/*** common ***/
+
+html {
+	font-family: Arial, sans-serif;
+	font-size: 16px;
+}
+
 body {
 	background-color: #fff;
-	font-family: sans-serif;
+	margin: 10px;
 }
 
 a {
@@ -16,22 +23,35 @@ a.link {
 	color: #869DD4;
 }
 
-header {
+.content {
+	margin-left: auto;
+	margin-right: auto;
+	min-width: 800px;
+	max-width: 1000px;
 }
 
-.content {
+/*** header ***/
+
+.header {
+	padding: 0 0 10px 0;
 }
+
+input {
+	padding: 2px;
+	margin: 0;
+	width: 98%;
+}
+
+/*** entry ***/
 
 .entry {
 	display: block;
 	padding-bottom: 10px;
 	padding-top: 10px;
-	border: 1px solid #fff;
-	border-bottom: 1px solid #6979A8;
 }
 
-header {
-	padding-bottom: 10px;
+.tags {
+	font-size: smaller;
 }
 
 .entry:hover {
@@ -47,10 +67,19 @@ header {
 }
 
 .entry .link {
-	padding-left: 20px;
+	color: #ccc;
+	word-wrap: break-word;
+	font-size: smaller;
 }
 
-input {
-	width: 500px;
+/*** responsive ***/
+
+@media (max-width: 800px) {
+	
+	.content {
+		min-width: 100%;
+		max-width: 100%;
+	}
+	
 }
 

@@ -48,24 +48,34 @@ try {
 
 ?>
 <!doctype html>
-<meta charset="utf-8">
-<title>b</title>
+<html>
 
-<link rel="stylesheet" href="style.css"/>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width; initial-scale=1.0;">
+	<title>b</title>
+
+	<link href='http://fonts.googleapis.com/css?family=Electrolize' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="normalize.css"/>
+	<link rel="stylesheet" href="style.css"/>
+<head>
+
+<body>
 
 <div class="content">
 
-<header>
+<div class="header">
 	<form>
-		<input autofocus type="text" name="query" value="" placeholder="http://... <- enter new url here and press return | or enter filter query"/>
+		<input autofocus type="text" name="query" value="" placeholder=""/>
 	</form>
-</header>
+</div>
 
 <?php foreach ($entries as $entry): ?>
 
 <div class="entry" id="entry_<?php echo $entry['id']; ?>" data-id="<?php echo $entry['id']; ?>" data-title="<?php echo htmlspecialchars($entry['desc']); ?>">
-	<div class="title"><?php echo BookmarkManager::formatDesc($entry['desc']); ?></div>
+	<div class="title"><?php echo BookmarkManager::formatDesc($entry['desc'], false); ?></div>
 	<a class="link" target="_blank" href="<?php echo htmlspecialchars($entry['link']); ?>"><?php echo htmlspecialchars($entry['link']);  ?></a>
+	<div class="tags"><?php echo BookmarkManager::formatTags($entry['desc']); ?></div>
 </div>
 
 <?php endforeach; ?>
@@ -74,4 +84,7 @@ try {
 
 <script src="jquery-1.7.1.min.js"></script>
 <script src="bookmarkManager.js"></script>
+
+</body>
+</head>
 
