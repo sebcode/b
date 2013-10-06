@@ -56,7 +56,7 @@ try {
 	<title>b</title>
 
 	<link href='http://fonts.googleapis.com/css?family=Electrolize' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" href="normalize.css"/>
+	<link rel="stylesheet" href="vendor/normalize.css"/>
 	<link rel="stylesheet" href="style.css"/>
 <head>
 
@@ -82,7 +82,7 @@ try {
 
 </div>
 
-<script src="jquery-2.0.3.min.js"></script>
+<script src="vendor/jquery-2.0.3.min.js"></script>
 <script src="bookmarkManager.js"></script>
 
 </body>
