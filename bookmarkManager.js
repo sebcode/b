@@ -26,6 +26,7 @@ function setTitle(id, title)
 		if (data.result === true) {
 			$('#entry_' + data.id + ' .title').html(data.title);
 			$('#entry_' + data.id).attr('data-title', data.rawTitle);
+			$('#entry_' + data.id + ' .tags').html(data.tags);
 		} else {
 			alert('err');
 		}

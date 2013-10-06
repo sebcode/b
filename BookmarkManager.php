@@ -23,7 +23,7 @@ class BookmarkManager
 		if (!is_dir($this->baseDir)) {
 			throw new \Exception('invalid baseDir in config.php');
 		}
-		
+
 		if (!is_writeable($this->baseDir)) {
 			throw new \Exception('baseDir in config.php not writeable');
 		}
@@ -63,7 +63,7 @@ class BookmarkManager
 		if (!is_dir($this->baseDir . $user)) {
 			throw new \Exception('no such user db');
 		}
-		
+
 		if (!is_writeable($this->baseDir . $user)) {
 			throw new \Exception('user dir not writeable');
 		}
@@ -117,8 +117,9 @@ class BookmarkManager
 					if ($id && !empty($postData['title'])) {
 						$this->db->setTitle($id, $postData['title']);
 						$error = false;
-						$result['title'] = self::formatDesc($postData['title']);
+						$result['title'] = self::formatDesc($postData['title'], false);
 						$result['rawTitle'] = $postData['title'];
+						$result['tags'] = self::formatTags($postData['title']);
 					}
 					break;
 
@@ -211,7 +212,7 @@ class BookmarkManager
 
 			foreach ($matches as $tag) {
 				if ($withTags) {
-					$replaceWith = self::formatTagLink($match);
+					$replaceWith = self::formatTagLink($tag);
 				} else {
 					$replaceWith = '';
 				}
