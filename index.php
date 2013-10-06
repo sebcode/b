@@ -82,7 +82,7 @@ try {
 
 </div>
 
-<script src="jquery-1.7.1.min.js"></script>
+<script src="jquery-2.0.3.min.js"></script>
 <script src="bookmarkManager.js"></script>
 
 </body>
