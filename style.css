@@ -2,84 +2,84 @@
 /*** common ***/
 
 html {
-	font-family: Arial, sans-serif;
-	font-size: 16px;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
 }
 
 body {
-	background-color: #fff;
-	margin: 10px;
+  background-color: #fff;
+  margin: 10px;
 }
 
 a {
-	color: #2F2318;
+  color: #2F2318;
 }
 
 a.hash {
-	color: #6979A8;
+  color: #6979A8;
 }
 
 a.link {
-	color: #869DD4;
+  color: #869DD4;
 }
 
 .content {
-	margin-left: auto;
-	margin-right: auto;
-	min-width: 800px;
-	max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  min-width: 800px;
+  max-width: 1000px;
 }
 
 /*** header ***/
 
 .header {
-	padding: 0 0 10px 0;
+  padding: 0 0 10px 0;
 }
 
 input {
-	padding: 2px;
-	margin: 0;
-	width: 98%;
+  padding: 2px;
+  margin: 0;
+  width: 98%;
 }
 
 /*** entry ***/
 
 .entry {
-	display: block;
-	padding-bottom: 10px;
-	padding-top: 10px;
+  display: block;
+  padding-bottom: 10px;
+  padding-top: 10px;
 }
 
 .tags {
-	font-size: smaller;
+  font-size: smaller;
 }
 
 .entry:hover {
 }
 
 .entry .title {
-	width: 100%;
-	cursor: pointer;
+  width: 100%;
+  cursor: pointer;
 }
 
 .entry .title:hover {
-	background-color: #FFFAD8;
+  background-color: #FFFAD8;
 }
 
 .entry .link {
-	color: #ccc;
-	word-wrap: break-word;
-	font-size: smaller;
+  color: #ccc;
+  word-wrap: break-word;
+  font-size: smaller;
 }
 
 /*** responsive ***/
 
 @media (max-width: 800px) {
-	
-	.content {
-		min-width: 100%;
-		max-width: 100%;
-	}
-	
+
+  .content {
+    min-width: 100%;
+    max-width: 100%;
+  }
+
 }
 
