@@ -3,47 +3,47 @@
 namespace B;
 
 if (isset($_GET['configtest'])) {
-  $requiredModules = array(
-    'sqlite3',
-    'curl',
-  );
+    $requiredModules = [
+        'sqlite3',
+        'curl',
+    ];
 
-  $failed = false;
+    $failed = false;
 
-  header('Content-type: text/plain');
+    header('Content-type: text/plain');
 
-  foreach ($requiredModules as $module) {
-    if (!extension_loaded($module)) {
-      echo "PHP module missing: $module \n";
-      $failed = true;
+    foreach ($requiredModules as $module) {
+        if (!extension_loaded($module)) {
+            echo "PHP module missing: $module \n";
+            $failed = true;
+        }
     }
-  }
 
-  if ($failed) {
-    exit(1);
-  }
+    if ($failed) {
+        exit(1);
+    }
 
-  echo "OK.";
-  exit(0);
+    echo 'OK.';
+    exit(0);
 }
 
-require_once('BookmarkManager.php');
+require_once 'BookmarkManager.php';
 
 try {
-  $b = new BookmarkManager($_SERVER['REQUEST_URI']);
-  $b->handleAjaxRequest($_POST);
+    $b = new BookmarkManager($_SERVER['REQUEST_URI']);
+    $b->handleAjaxRequest($_POST);
 
-  if (!empty($_GET['filter'])) {
-    $filter = $_GET['filter'];
-  } else {
-    $filter = false;
-  }
+    if (!empty($_GET['filter'])) {
+        $filter = $_GET['filter'];
+    } else {
+        $filter = false;
+    }
 
-  $entries = $b->getDB()->getEntries($filter);
+    $entries = $b->getDB()->getEntries($filter);
 } catch (\Exception $e) {
-  header('HTTP/1.1 500 err');
-  echo $e->getMessage();
-  exit();
+    header('HTTP/1.1 500 err');
+    echo $e->getMessage();
+    exit();
 }
 
 ?>

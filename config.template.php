@@ -1,7 +1,6 @@
 <?php
 
 return [
-  'baseDir' => '/opt/bookmarks/',
-  'baseUri' => '/'
+    'baseDir' => '/opt/bookmarks/',
+    'baseUri' => '/',
 ];
-
