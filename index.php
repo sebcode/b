@@ -73,7 +73,7 @@ try {
 
   <link rel="stylesheet" href="vendor/normalize.css"/>
   <link rel="stylesheet" href="style.css"/>
-<head>
+</head>
 
 <body>
 
@@ -119,5 +119,5 @@ try {
 <?php endif; ?>
 
 </body>
-</head>
+</html>
 
