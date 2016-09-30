@@ -24,14 +24,25 @@ if (isset($_GET['configtest'])) {
     }
 
     echo 'OK.';
-    exit(0);
+    exit();
 }
 
 require_once 'BookmarkManager.php';
 
 try {
     $b = new BookmarkManager($_SERVER['REQUEST_URI']);
-    $b->handleAjaxRequest($_POST);
+
+    if ($b->subPage === 'bookmarklet') {
+        include __DIR__.'/bookmarklet.php';
+        exit();
+    } else if ($b->subPage) {
+        throw new \Exception('Page not found', 404);
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $postData = json_decode(file_get_contents("php://input"), true);
+        $b->handleAjaxRequest($postData);
+    }
 
     if (!empty($_GET['filter'])) {
         $filter = $_GET['filter'];
@@ -41,21 +52,25 @@ try {
 
     $entries = $b->getDB()->getEntries($filter);
 } catch (\Exception $e) {
-    header('HTTP/1.1 500 err');
+    if ($e->getCode()) {
+        http_response_code($e->getCode());
+    } else {
+        http_response_code(500);
+    }
+
     echo $e->getMessage();
     exit();
 }
 
 ?>
-<!doctype html>
+<!DOCTYPE html>
 <html>
 
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width; initial-scale=1.0;">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>b</title>
 
-  <link href='http://fonts.googleapis.com/css?family=Electrolize' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="vendor/normalize.css"/>
   <link rel="stylesheet" href="style.css"/>
 <head>
@@ -82,8 +97,26 @@ try {
 
 </div>
 
-<script src="vendor/jquery-2.0.3.min.js"></script>
+<script src="vendor/jquery-3.1.1.min.js"></script>
 <script src="bookmarkManager.js"></script>
+
+<?php if (!empty($_GET['add'])): ?>
+
+<script>
+
+(function () {
+    $(document).ready(function() {
+        var input = $(':input')
+        input.val("<?php echo $_GET['add']; ?> ")
+        input.focus()
+        /* Remove query string from URL */
+        history.replaceState({}, null, window.location.pathname)
+    })
+}())
+
+</script>
+
+<?php endif; ?>
 
 </body>
 </head>

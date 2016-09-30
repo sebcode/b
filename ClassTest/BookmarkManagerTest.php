@@ -8,10 +8,10 @@ class BookmarkManagerTest extends PHPUnit_Framework_TestCase
     {
         $nbsp = html_entity_decode('&nbsp;', 0, 'UTF-8');
 
-        $tests = array(
-      'extractTitle.html' => 'bla\'bla möö'.$nbsp.'p&hop',
-      'extractTitle.latin1.html' => 'mööp',
-    );
+        $tests = [
+            'extractTitle.html' => 'bla\'bla möö'.$nbsp.'p&hop',
+            'extractTitle.latin1.html' => 'mööp',
+        ];
 
         foreach ($tests as $file => $exp) {
             $title = file_get_contents(dirname(__FILE__).'/'.$file);

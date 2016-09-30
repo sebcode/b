@@ -12,6 +12,7 @@ class DB
 
         $this->pdo = new \PDO('sqlite:'.$file);
         $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $this->pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
 
         if ($new) {
             $this->createTables();
@@ -42,6 +43,18 @@ class DB
         return true;
     }
 
+    public function exists($link)
+    {
+        $st = $this->pdo->prepare('
+            SELECT id FROM b
+            WHERE link = :link
+        ');
+
+        $st->execute([ ':link' => $link ]);
+
+        return (bool) $st->fetch();
+    }
+
     public function getEntries($filter = false)
     {
         if (!$filter) {
@@ -54,9 +67,9 @@ class DB
             ORDER BY date DESC
         ');
 
-        $st->execute(array(':filter' => "%$filter%"));
+        $st->execute([ ':filter' => "%$filter%" ]);
 
-        $ret = $st->fetchAll(\PDO::FETCH_ASSOC);
+        $ret = $st->fetchAll();
 
         return $ret;
     }

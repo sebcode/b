@@ -59,8 +59,12 @@ b is a minimalistic bookmark manager for your own server written in PHP where bo
  * To edit the URL, double click beside the link.
  * The input field can also be used to filter bookmarks. Filtering is done with a full-text search on all titles.
 
+### Bookmarklet
+
+Visit `/[user]/bookmarklet` to access the user's bookmarklet, e.g. `http://bookmarks.example.com/peter/bookmarklet`. (Thanks to nibreh for the suggestion!)
+
 ### Credits
 
-Copyright (c) 2011-2015 Sebastian Volland http://github.com/sebcode
+Copyright (c) 2011-2016 Sebastian Volland http://github.com/sebcode
 
-The source code is licensed under the terms of the MIT license (see LICENCE file).
+The source code is licensed under the terms of the MIT license (see LICENSE file).

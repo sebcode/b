@@ -9,6 +9,8 @@ class BookmarkManager
     protected $db;
     protected $user;
     protected $baseDir;
+    public $requestUri;
+    public $subPage;
 
     public function __construct($requestUri = '/')
     {
@@ -41,31 +43,31 @@ class BookmarkManager
         }
 
         /* cut baseUri from request uri */
-        $uri = substr($requestUri, strlen($baseUri));
+        $this->requestUri = substr($requestUri, strlen($baseUri));
 
         /* cut query string from request uri */
-        if (($p = strpos($uri, '?')) !== false) {
-            $uri = substr($uri, 0, $p);
+        if (($p = strpos($this->requestUri, '?')) !== false) {
+            $this->requestUri = substr($this->requestUri, 0, $p);
         }
 
-        $uriParts = explode('/', trim($uri, '/'));
+        $uriParts = explode('/', trim($this->requestUri, '/'));
 
-        if (count($uriParts) !== 1) {
-            throw new \Exception('invalid request');
+        if (count($uriParts) === 2) {
+            $this->subPage = $uriParts[1];
         }
 
         $user = $uriParts[0];
 
         if (!preg_match('@^[a-z0-9]+$@i', $user)) {
-            throw new \Exception('invalid user');
+            throw new \Exception('Page not found', 404);
         }
 
         if (!is_dir($this->baseDir.$user)) {
-            throw new \Exception('no such user db');
+            throw new \Exception('No such user: '.$user, 404);
         }
 
         if (!is_writeable($this->baseDir.$user)) {
-            throw new \Exception('user dir not writeable');
+            throw new \Exception('User dir not writeable');
         }
 
         $this->user = $user;
@@ -85,12 +87,11 @@ class BookmarkManager
         }
 
         $action = $postData['action'];
-
         $error = true;
-        $result = array();
+        $result = [];
 
-        if (!empty($_POST['id'])) {
-            $id = $_POST['id'];
+        if (!empty($postData['id'])) {
+            $id = $postData['id'];
             $result['id'] = $id;
         } else {
             $id = false;
@@ -99,40 +100,40 @@ class BookmarkManager
         try {
             switch ($action) {
             case 'add':
-              $result['url'] = $postData['url'];
-              $result['force'] = $postData['force'] ? true : false;
-              @list($url, $desc) = @explode(' ', $postData['url'], 2);
-              $this->addBookmark($url, $desc, !empty($postData['force']));
-              $error = false;
-              break;
+                $result['url'] = $postData['url'];
+                $result['force'] = $postData['force'] ? true : false;
+                @list($url, $desc) = @explode(' ', $postData['url'], 2);
+                $this->addBookmark($url, $desc, !empty($postData['force']));
+                $error = false;
+                break;
 
             case 'delete':
-              if ($id) {
-                  $this->db->deleteEntry($id);
-                  $error = false;
-              }
-              break;
+                if ($id) {
+                    $this->db->deleteEntry($id);
+                    $error = false;
+                }
+                break;
 
             case 'settitle':
-              if ($id && !empty($postData['title'])) {
-                  $this->db->setTitle($id, $postData['title']);
-                  $error = false;
-                  $result['title'] = self::formatDesc($postData['title'], false);
-                  $result['rawTitle'] = $postData['title'];
-                  $result['tags'] = self::formatTags($postData['title']);
-              }
-              break;
+                if ($id && !empty($postData['title'])) {
+                    $this->db->setTitle($id, $postData['title']);
+                    $error = false;
+                    $result['title'] = self::formatDesc($postData['title'], false);
+                    $result['rawTitle'] = $postData['title'];
+                    $result['tags'] = self::formatTags($postData['title']);
+                }
+                break;
 
             case 'setlink':
-              if ($id && !empty($postData['link'])) {
-                  $this->db->setLink($id, $postData['link']);
-                  $error = false;
-                  $result['link'] = $postData['link'];
-              }
-              break;
+                if ($id && !empty($postData['link'])) {
+                    $this->db->setLink($id, $postData['link']);
+                    $error = false;
+                    $result['link'] = $postData['link'];
+                }
+                break;
 
             default:
-              return false;
+                return false;
             }
         } catch (\Exception $e) {
             $result['message'] = $e->getMessage();
@@ -144,6 +145,7 @@ class BookmarkManager
             $result['result'] = true;
         }
 
+        header('Content-Type: application/json');
         echo json_encode($result, JSON_FORCE_OBJECT);
 
         exit();
@@ -151,6 +153,10 @@ class BookmarkManager
 
     public function addBookmark($url, $appendDesc = '', $force = false)
     {
+        if ($this->db->exists($url)) {
+            throw new \Exception('Bookmark already exists.');
+        }
+
         try {
             $body = $this->fetch($url);
         } catch (\Exception $e) {

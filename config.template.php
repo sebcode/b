@@ -2,5 +2,5 @@
 
 return [
     'baseDir' => '/opt/bookmarks/',
-    'baseUri' => '/',
+    'baseUri' => '/'
 ];
