@@ -77,11 +77,11 @@ try {
 
 <body>
 
-<div class="content">
+<div id="content">
 
 <div class="header">
-  <form>
-    <input autofocus type="text" name="query" value="" placeholder=""/>
+  <form id="filterform">
+    <input id="query" autofocus type="text" name="query" value="" placeholder=""/>
   </form>
 </div>
 
@@ -97,7 +97,6 @@ try {
 
 </div>
 
-<script src="vendor/jquery-3.1.1.min.js"></script>
 <script src="bookmarkManager.js"></script>
 
 <?php if (!empty($_GET['add'])): ?>

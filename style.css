@@ -23,7 +23,7 @@ a.link {
   color: #869DD4;
 }
 
-.content {
+#content {
   margin-left: auto;
   margin-right: auto;
   min-width: 800px;
@@ -76,7 +76,7 @@ input {
 
 @media (max-width: 800px) {
 
-  .content {
+  #content {
     min-width: 100%;
     max-width: 100%;
   }

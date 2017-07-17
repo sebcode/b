@@ -1,148 +1,152 @@
+;(function() {
+  const contentEl = document.getElementById('content')
+  const formEl = document.getElementById('filterform')
+  const queryEl = document.getElementById('query')
 
-function request(data)
-{
-    return $.ajax({
-        method: 'POST',
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data: JSON.stringify(data)
+  async function request(data) {
+    const res = await fetch('', {
+      method: 'POST',
+      contentType: 'application/json; charset=utf-8',
+      body: JSON.stringify(data),
     })
-}
 
-function deleteEntry(id)
-{
-    request({ action: 'delete', id: id }).then(function(data) {
-        if (data.message) {
-            alert(data.message)
-        }
+    const text = await res.text()
+    return JSON.parse(text)
+  }
 
-        if (data.result === true) {
-            $('#entry_' + data.id).remove()
-        }
+  async function deleteEntry(id) {
+    const res = await request({ action: 'delete', id })
+
+    if (res.message) {
+      alert(res.message)
+    }
+
+    if (res.result === true) {
+      document.getElementById(`entry_${res.id}`).remove()
+    }
+  }
+
+  async function setTitle(id, title) {
+    const res = await request({ action: 'settitle', id, title })
+
+    if (res.message) {
+      alert(res.message)
+    }
+
+    if (res.result === true) {
+      const el = document.getElementById(`entry_${res.id}`)
+      el.querySelector('.title').innerHTML = res.title
+      el.setAttribute('data-title', res.rawTitle)
+      el.querySelector('.tags').innerHTML = res.tags
+    } else {
+      alert('err')
+    }
+  }
+
+  async function setLink(id, link) {
+    const res = await request({ action: 'setlink', id, link })
+
+    if (res.message) {
+      alert(res.message)
+    }
+
+    if (res.result === true) {
+      const el = document.getElementById(`entry_${res.id}`)
+      const linkEl = el.querySelector('.link')
+      linkEl.innerHTML = res.link
+      linkEl.setAttribute('href', res.link)
+    } else {
+      alert('err')
+    }
+  }
+
+  async function addUrl(url, force) {
+    queryEl.setAttribute('disabled', 'disabled')
+
+    const res = await request({
+      action: 'add',
+      url,
+      force: force ? '1' : '0',
     })
-}
 
-function setTitle(id, title)
-{
-    request({ action: 'settitle', id: id, title: title }).then(function(data) {
-        if (data.message) {
-            alert(data.message)
-        }
+    if (!res.force && res.message === 'could not fetch') {
+      if (confirm('could not fetch, add anyway?')) {
+        addUrl(res.url, true)
+        return
+      }
 
-        if (data.result === true) {
-            $('#entry_' + data.id + ' .title').html(data.title)
-            $('#entry_' + data.id).attr('data-title', data.rawTitle)
-            $('#entry_' + data.id + ' .tags').html(data.tags)
-        } else {
-            alert('err')
-        }
-    })
-}
+      queryEl.removeAttribute('disabled')
+      queryEl.focus()
+      return
+    }
 
-function setLink(id, link)
-{
-    request({ action: 'setlink', id: id, link: link }).then(function(data) {
-        if (data.message) {
-            alert(data.message)
-        }
+    if (res.message) {
+      alert(res.message)
+    }
 
-        if (data.result === true) {
-            $('#entry_' + data.id + ' .link').html(data.link)
-            $('#entry_' + data.id + ' .link').attr('href', data.link)
-        } else {
-            alert('err')
-        }
-    })
-}
+    if (res.result === true) {
+      document.location.reload()
+    }
 
-function addUrl(url, force)
-{
-    var input = $(':input')
+    queryEl.removeAttribute('disabled')
+    queryEl.focus()
+  }
 
-    input.attr('disabled', 'disabled')
-
-    request({
-        action: 'add',
-        url: url,
-        force: force ? '1' : '0'
-    }).then(function(data) {
-        if (!data.force && data.message === 'could not fetch') {
-            if (confirm('could not fetch, add anyway?')) {
-                addUrl(data.url, true)
-                return
-            }
-        
-            input.removeAttr('disabled')
-            input.focus()
-            return
-        }
-
-        if (data.message) {
-            alert(data.message)
-        }
-
-        if (data.result === true) {
-            document.location.reload()
-        }
-    
-        input.removeAttr('disabled')
-        input.focus()
-    })
-}
-
-$('.content').click(function(e) {
-    var target = e.target
+  contentEl.addEventListener('click', e => {
+    const target = e.target
 
     if (target && target.className === 'title') {
-        var id = target.parentNode.getAttribute('data-id'),
-            rawTitle = target.parentNode.getAttribute('data-title'),
-            ret = prompt('Rename or enter "-" to delete', rawTitle)
+      const id = target.parentNode.getAttribute('data-id'),
+        rawTitle = target.parentNode.getAttribute('data-title'),
+        ret = prompt('Rename or enter "-" to delete', rawTitle)
 
-        if (!ret) {
-            return
+      if (!ret) {
+        return
+      }
+
+      if (ret === '-') {
+        if (confirm('Really delete?')) {
+          deleteEntry(id)
+          return
+        } else {
+          return
         }
+      }
 
-        if (ret === '-') {
-            if (confirm('Really delete?')) {
-                deleteEntry(id)
-                return
-            } else {
-                return
-            }
-        }
-
-        setTitle(id, ret)
+      setTitle(id, ret)
     }
-})
+  })
 
-$('.content').dblclick(function(e) {
-    var target = e.target
+  contentEl.addEventListener('dblclick', e => {
+    const target = e.target
 
     if (target && target.className === 'entry') {
-        var id = target.getAttribute('data-id')
+      const id = target.getAttribute('data-id')
+      const href = target.querySelector('.link').getAttribute('href')
+      const ret = prompt('Edit bookmark', href)
 
-        var href = $('.link', target).attr('href')
+      if (ret === null) {
+        return
+      }
 
-        var ret = prompt('Edit bookmark', href)
-
-        if (ret === null) {
-            return
-        }
-
-        setLink(id, ret)
+      setLink(id, ret)
     }
-})
+  })
 
-$('form').submit(function(e) {
-    var query = $(':input').val()
+  formEl.addEventListener('submit', e => {
+    const query = queryEl.value
+
+    e.preventDefault()
 
     if (query.indexOf('http:') === 0 || query.indexOf('https:') === 0) {
-        addUrl(query)
-        return false
+      addUrl(query)
+      return false
     }
 
-    document.location.href = "?filter=" + encodeURIComponent(query)
+    document.location.href = '?filter=' + encodeURIComponent(query)
 
     return false
-})
+  })
+})()
 
+// vim: et ts=2 sw=2 sts=2
