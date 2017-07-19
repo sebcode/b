@@ -2,5 +2,8 @@
 
 return [
     'baseDir' => '/opt/bookmarks/',
-    'baseUri' => '/'
+    'baseUri' => '/',
+    /* Optional: Infinite scrolling. Value is the number of items to load
+     * on each increment. */
+    //'infiniteScrolling' => 200,
 ];

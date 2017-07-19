@@ -147,6 +147,43 @@
 
     return false
   })
+
+  let loadingMore = false
+  let ifStep = window.infiniteScrolling
+  let ifSkip = ifStep
+
+  async function loadMore() {
+    if (loadingMore) {
+      return
+    }
+
+    loadingMore = true
+
+    const url =
+      `?filter=${encodeURIComponent(window.filter)}` +
+      `&format=html&count=${ifStep}&skip=${ifSkip}`
+    const res = await fetch(url)
+    const text = await res.text()
+
+    if (!text) {
+      return
+    }
+
+    contentEl.insertAdjacentHTML('beforeend', text)
+    ifSkip += ifStep
+    loadingMore = false
+  }
+
+  if (window.infiniteScrolling) {
+    window.addEventListener('scroll', e => {
+      const offset =
+        document.body.offsetHeight - (window.pageYOffset + window.innerHeight)
+
+      if (offset < 500) {
+        loadMore()
+      }
+    })
+  }
 })()
 
 // vim: et ts=2 sw=2 sts=2

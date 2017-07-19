@@ -55,19 +55,33 @@ class DB
         return (bool) $st->fetch();
     }
 
-    public function getEntries($filter = false)
+    public function getEntries($filter = false, $skip = false, $count = false)
     {
         if (!$filter) {
             $filter = '%';
         }
 
-        $st = $this->pdo->prepare('
+        if ($skip !== false && $count !== false) {
+            $limit = 'LIMIT :skip, :count';
+        } else {
+            $limit = '';
+        }
+
+        $st = $this->pdo->prepare("
             SELECT id, desc, link FROM b
             WHERE desc LIKE :filter
             ORDER BY date DESC
-        ');
+            $limit
+        ");
 
-        $st->execute([ ':filter' => "%$filter%" ]);
+        $args = [ ':filter' => "%$filter%" ];
+
+        if ($skip !== false && $count !== false) {
+            $args['skip'] = $skip;
+            $args['count'] = $count;
+        }
+
+        $st->execute($args);
 
         $ret = $st->fetchAll();
 

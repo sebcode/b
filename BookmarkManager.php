@@ -6,6 +6,7 @@ require_once 'DB.php';
 
 class BookmarkManager
 {
+    protected $config;
     protected $db;
     protected $user;
     protected $baseDir;
@@ -14,13 +15,13 @@ class BookmarkManager
 
     public function __construct($requestUri = '/')
     {
-        $config = require __DIR__.'/config.php';
+        $this->config = require __DIR__.'/config.php';
 
-        if (empty($config['baseDir'])) {
+        if (empty($this->config['baseDir'])) {
             throw new \Exception('baseDir not defined in config.php');
         }
 
-        $this->baseDir = $config['baseDir'];
+        $this->baseDir = $this->config['baseDir'];
 
         if (!is_dir($this->baseDir)) {
             throw new \Exception('invalid baseDir in config.php');
@@ -32,11 +33,11 @@ class BookmarkManager
 
         $this->baseDir = rtrim($this->baseDir, '/').'/';
 
-        if (empty($config['baseUri'])) {
+        if (empty($this->config['baseUri'])) {
             throw new \Exception('baseUri not defined in config.php');
         }
 
-        $baseUri = rtrim($config['baseUri'], '/').'/';
+        $baseUri = rtrim($this->config['baseUri'], '/').'/';
 
         if (strpos($requestUri, $baseUri) !== 0) {
             throw new \Exception('invalid baseuri');
@@ -73,6 +74,15 @@ class BookmarkManager
         $this->user = $user;
 
         $this->db = new DB($this->baseDir.$user.'/b.db');
+    }
+
+    public function getConfig($key)
+    {
+        if (isset($this->config[$key])) {
+            return $this->config[$key];
+        }
+
+        return false;
     }
 
     public function getDB()
@@ -145,8 +155,8 @@ class BookmarkManager
             $result['result'] = true;
         }
 
-        header('Content-Type: application/json');
-        echo json_encode($result, JSON_FORCE_OBJECT);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($result, JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE);
 
         exit();
     }

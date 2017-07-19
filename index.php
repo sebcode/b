@@ -50,16 +50,62 @@ try {
         $filter = false;
     }
 
-    $entries = $b->getDB()->getEntries($filter);
+    $skip = false;
+    $count = $b->getConfig('infiniteScrolling');
+    if ($count !== false) {
+        $skip = 0;
+    }
+
+    if (isset($_GET['skip'])) {
+        $skip = $_GET['skip'];
+    }
+
+    if (isset($_GET['count'])) {
+        $count = $_GET['count'];
+    }
+
+    if (!empty($_GET['format'])) {
+        $format = $_GET['format'];
+    } else {
+        $format = false;
+    }
+
+    $entries = $b->getDB()->getEntries($filter, $skip, $count);
+
+    if ($format === 'json') {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($entries, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        exit();
+    }
+
+    if ($format === 'html') {
+        dumpEntries($entries);
+        exit();
+    }
 } catch (\Exception $e) {
-    if ($e->getCode()) {
-        http_response_code($e->getCode());
+    if (($code = $e->getCode()) && is_numeric($code)) {
+        http_response_code($code);
     } else {
         http_response_code(500);
     }
 
     echo $e->getMessage();
+    throw $e;
     exit();
+}
+
+function dumpEntries($entries)
+{
+  foreach ($entries as $entry) {
+  ?>
+    <div class="entry" id="entry_<?php echo $entry['id']; ?>" data-id="<?php echo $entry['id']; ?>" data-title="<?php echo htmlspecialchars($entry['desc']); ?>">
+      <div class="title"><?php echo BookmarkManager::formatDesc($entry['desc'], false); ?></div>
+      <a class="link" target="_blank" href="<?php echo htmlspecialchars($entry['link']); ?>"><?php echo htmlspecialchars($entry['link']);  ?></a>
+      <div class="tags"><?php echo BookmarkManager::formatTags($entry['desc']); ?></div>
+    </div>
+
+  <?php
+  }
 }
 
 ?>
@@ -85,18 +131,17 @@ try {
   </form>
 </div>
 
-<?php foreach ($entries as $entry): ?>
-
-<div class="entry" id="entry_<?php echo $entry['id']; ?>" data-id="<?php echo $entry['id']; ?>" data-title="<?php echo htmlspecialchars($entry['desc']); ?>">
-  <div class="title"><?php echo BookmarkManager::formatDesc($entry['desc'], false); ?></div>
-  <a class="link" target="_blank" href="<?php echo htmlspecialchars($entry['link']); ?>"><?php echo htmlspecialchars($entry['link']);  ?></a>
-  <div class="tags"><?php echo BookmarkManager::formatTags($entry['desc']); ?></div>
-</div>
-
-<?php endforeach; ?>
+<?php dumpEntries($entries); ?>
 
 </div>
 
+<script>
+window.filter = <?php echo $filter ? json_encode($filter) : "''"; ?>
+
+<?php if ($step = $b->getConfig('infiniteScrolling')): ?>
+window.infiniteScrolling = <?php echo $step; ?>
+<?php endif; ?>
+</script>
 <script src="bookmarkManager.js"></script>
 
 <?php if (!empty($_GET['add'])): ?>
