@@ -223,7 +223,7 @@ class BookmarkManager
     {
         $desc = htmlspecialchars($desc);
 
-        if (preg_match_all('@#[a-z0-9-_]+@', $desc, $m)) {
+        if (preg_match_all('@#[a-z0-9-_]+@i', $desc, $m)) {
             $matches = $m[0];
 
             foreach ($matches as $tag) {
@@ -244,7 +244,7 @@ class BookmarkManager
         $tags = '';
         $desc = htmlspecialchars($desc);
 
-        if (preg_match_all('@#[a-z0-9-_]+@', $desc, $m)) {
+        if (preg_match_all('@#[a-z0-9-_]+@i', $desc, $m)) {
             $matches = $m[0];
 
             foreach ($matches as $tag) {
