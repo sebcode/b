@@ -90,7 +90,6 @@ try {
     }
 
     echo $e->getMessage();
-    throw $e;
     exit();
 }
 
