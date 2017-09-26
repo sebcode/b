@@ -114,6 +114,7 @@ function dumpEntries($entries)
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
   <title>b</title>
 
   <link rel="stylesheet" href="vendor/normalize.css"/>
