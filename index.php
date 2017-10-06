@@ -149,13 +149,13 @@ window.infiniteScrolling = <?php echo $step; ?>
 <script>
 
 (function () {
-    $(document).ready(function() {
-        var input = $(':input')
-        input.val("<?php echo $_GET['add']; ?> ")
-        input.focus()
+    window.onload = function() {
+        const queryEl = document.getElementById('query')
+        queryEl.value = "<?php echo $_GET['add']; ?> "
+        queryEl.focus()
         /* Remove query string from URL */
         history.replaceState({}, null, window.location.pathname)
-    })
+    }
 }())
 
 </script>

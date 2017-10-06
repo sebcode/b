@@ -1,11 +1,17 @@
 <?php
 
+$config = require(__DIR__.'/config.php');
+$baseUri = '/' . trim($config['baseUri'], '/');
+if ($baseUri !== '/') {
+    $baseUri .= '/';
+}
+
 /* Get current user from URL */
-preg_match('@^/([a-z0-9]+)/@i', $_SERVER['REQUEST_URI'], $m);
+preg_match('@^/([a-z0-9]+)/@i', substr($_SERVER['REQUEST_URI'], strlen($baseUri) - 1), $m);
 $user = $m[1];
 
 /* Build this user's bookmarklet base URL */
-$url = 'http'.(isset($_SERVER['HTTPS']) ? 's' : '')."://{$_SERVER['HTTP_HOST']}/$user";
+$url = 'http'.(isset($_SERVER['HTTPS']) ? 's' : '')."://{$_SERVER['HTTP_HOST']}{$baseUri}{$user}";
 
 /* Bookmarklet JS code */
 $script = <<<EOF
