@@ -8,6 +8,7 @@
       method: 'POST',
       contentType: 'application/json; charset=utf-8',
       body: JSON.stringify(data),
+      credentials: 'include'
     })
 
     const text = await res.text()
@@ -162,7 +163,7 @@
     const url =
       `?filter=${encodeURIComponent(window.filter)}` +
       `&format=html&count=${ifStep}&skip=${ifSkip}`
-    const res = await fetch(url)
+    const res = await fetch(url, { credentials: 'include' })
     const text = await res.text()
 
     if (!text) {
