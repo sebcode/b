@@ -67,14 +67,21 @@ class DB
             $limit = '';
         }
 
-        $st = $this->pdo->prepare("
-            SELECT id, desc, link FROM b
-            WHERE desc LIKE :filter
-            ORDER BY date DESC
-            $limit
-        ");
+	$select = "
+	    SELECT id, desc, link FROM b
+	    WHERE desc LIKE '%" ;
+	
+	$filter_parts = array_filter(explode(" ",$filter));
+        $where_clause = implode("%' AND desc LIKE '%",$filter_parts);
+	$where_clause .= "%' " ;
 
-        $args = [ ':filter' => "%$filter%" ];
+	$select .= $where_clause ;
+	$select .= " ORDER BY date DESC $limit" ;
+
+        $st = $this->pdo->prepare( $select );
+
+        // $args = [ ':filter' => "%$filter%" ];
+	$args = [];
 
         if ($skip !== false && $count !== false) {
             $args['skip'] = $skip;
