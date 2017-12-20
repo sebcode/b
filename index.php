@@ -128,7 +128,13 @@ function dumpEntries($entries)
 
 <div class="header">
   <form id="filterform">
-    <input id="query" autofocus type="text" name="query" value="" placeholder=""/>
+    <input id="query"
+      autofocus
+      type="text"
+      name="query"
+      placeholder=""
+      value="<?php echo htmlspecialchars($filter); ?>"
+    />
   </form>
 </div>
 
@@ -145,23 +151,29 @@ window.infiniteScrolling = <?php echo $step; ?>
 </script>
 <script src="bookmarkManager.js"></script>
 
-<?php if (!empty($_GET['add'])): ?>
-
 <script>
 
 (function () {
-    window.onload = function() {
-        const queryEl = document.getElementById('query')
-        queryEl.value = "<?php echo $_GET['add']; ?> "
-        queryEl.focus()
-        /* Remove query string from URL */
-        history.replaceState({}, null, window.location.pathname)
-    }
+  window.onload = function() {
+    const queryEl = document.getElementById('query')
+    queryEl.value = <?php echo (json_encode(!empty($_GET['add']) ? $_GET['add'] : (string)$filter)); ?>
+
+    /* Place cursor at end of query text.
+     * https://stackoverflow.com/a/10576409 */
+    queryEl.addEventListener('focus', e => {
+      setTimeout(() => { queryEl.selectionStart = queryEl.selectionEnd = 10000 }, 0)
+    })
+
+    queryEl.focus()
+
+    <?php if (!empty($_GET['add'])): ?>
+    /* Remove query string from URL */
+    history.replaceState({}, null, window.location.pathname)
+    <?php endif; ?>
+  }
 }())
 
 </script>
-
-<?php endif; ?>
 
 </body>
 </html>

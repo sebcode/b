@@ -83,7 +83,8 @@ Bookmarks are stored in a sqlite database. Features:
    edit the title. Enter '-' (minus sign) to remove an entry.
  * To edit the URL, double click beside the link.
  * The input field can also be used to filter bookmarks. Filtering is done with
-   a full-text search on all titles.
+   a full-text search on all titles. Search terms are separated by spaces
+   and joined with AND.
 
 ### Infinite scrolling
 

@@ -67,14 +67,25 @@ class DB
             $limit = '';
         }
 
+        if ($filter) {
+            $queryParts = explode(' ', $filter);
+            $where = [];
+            $args = [];
+            foreach ($queryParts as $i => $part) {
+                $where[] = "desc LIKE :filter$i";
+                $args[":filter$i"] = '%'.$part.'%';
+            }
+        } else {
+            $where[] = "desc LIKE :filter";
+            $args[":filter"] = '%';
+        }
+
         $st = $this->pdo->prepare("
             SELECT id, desc, link FROM b
-            WHERE desc LIKE :filter
+            WHERE ". join(' AND ', $where) ."
             ORDER BY date DESC
             $limit
         ");
-
-        $args = [ ':filter' => "%$filter%" ];
 
         if ($skip !== false && $count !== false) {
             $args['skip'] = $skip;
