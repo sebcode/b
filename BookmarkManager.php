@@ -12,6 +12,7 @@ class BookmarkManager
     protected $baseDir;
     public $requestUri;
     public $subPage;
+    public $orderHashTagsBy;
 
     public function __construct($requestUri = '/')
     {
@@ -258,5 +259,11 @@ class BookmarkManager
     public static function formatTagLink($tag)
     {
         return '<a class="hash" href="?filter='.rawurlencode($tag).'">'.$tag.'</a>';
+    }
+    
+    public static function formatListHashTag($descTag,$counter) 
+    {
+        $hashTag = htmlspecialchars($descTag);        
+        return '<a class="hashtaglink" href="?filter='.rawurlencode($hashTag).'">'.$hashTag.'  ( '.$counter.' )</a>';
     }
 }

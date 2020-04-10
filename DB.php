@@ -29,8 +29,17 @@ class DB
                 link TEXT NOT NULL DEFAULT '' UNIQUE
             );
         ")->execute();
+        /*
+        $this->pdo->prepare("
+            CREATE TEMPORARY TABLE tags (
+                id INTEGER PRIMARY KEY,                
+                desc TEXT NOT NULL DEFAULT '' UNIQUE,
+                count INTEGER NOT NULL DEFAULT 1
+            );
+        ")->execute();
+        */
     }
-
+    
     public function add($desc, $link)
     {
         $this->pdo->prepare('
@@ -98,7 +107,131 @@ class DB
 
         return $ret;
     }
+    
+    public function getHashTagsArray()
+    {
+        
+        $stAll = $this->pdo->prepare('
+            SELECT desc FROM b WHERE desc LIKE :desc;
+        ');
+        
+        $stAll->execute([ 'desc' => "%" ]);
+                
+        $allDescs = $stAll->fetchAll();
+                
+        $hashTags = array(array());
+                
+        foreach ( $allDescs as $desc ) {
+                       
+            $description = $desc['desc'];
+           
+            if (preg_match_all('@#[a-z0-9-_]+@i', $description, $m)) {
+                $matches = $m[0];
 
+                foreach ($matches as $tag) {
+                    
+                    $found = false;
+                    foreach( $hashTags as $hashes ) {
+                        if ($hashes['desc'] === $tag ) {
+                            $hashes['count'] = $hashes['count'] + 1;
+                            $found = true; 
+                        }
+                    }
+                    if ( $found === false ) {
+                        $hashTags[] = [ 'desc' => $tag , 'count' => 1 ];
+                    }
+                    
+                }
+            } 
+        }
+         
+        asort($hashTags);
+                
+        return $hashTags;
+    }
+    
+    /*
+     *  orderby :=  "desc" | "count"
+     */
+    public function getHashTagsTable($orderBy)
+    {
+        
+        //tmp
+        /*$st = $this->pdo->prepare("
+            DROP TABLE IF EXISTS tags; 
+        ")->execute();
+        */
+        $st = $this->pdo->prepare("
+            CREATE TEMPORARY TABLE IF NOT EXISTS tags (
+                id INTEGER PRIMARY KEY,                
+                desc TEXT NOT NULL DEFAULT '' UNIQUE,
+                count INTEGER NOT NULL DEFAULT 1
+                );
+        ")->execute();
+        
+        $st = $this->pdo->prepare("
+            DELETE FROM tags
+            ;
+        ")->execute();
+        
+        $stAll = $this->pdo->prepare("
+            SELECT desc FROM b WHERE desc LIKE :desc;
+        ");
+        
+        $args['desc'] = "%";
+        
+        $stAll->execute($args);
+        
+        $allDescs = $stAll->fetchAll();            
+        
+        foreach ( $allDescs as $desc ) {
+           
+            //$description = htmlspecialchars($desc['desc']);
+            $description = $desc['desc'];
+           
+            if (preg_match_all('@#[a-z0-9-_]+@i', $description, $m)) {
+                $matches = $m[0];
+
+                foreach ($matches as $tag) {
+                    $this->incTagCounter($tag);
+                }
+            } 
+        }
+        
+        $sql = "SELECT desc,count FROM tags ORDER BY desc ASC;";
+        if ( "$orderBy" === "count"){
+           $sql = "SELECT desc,count FROM tags ORDER BY count DESC;";
+        }
+        
+        $stTags = $this->pdo->prepare($sql);
+        
+        $stTags->execute();
+        
+        $ret = $stTags->fetchAll();
+        
+        $st = $this->pdo->prepare("
+            DROP TABLE tags; 
+        ")->execute();
+                
+        return $ret;
+    }
+    
+    private function incTagCounter($tag){
+        
+        $st = $this->pdo->prepare("
+            INSERT OR REPLACE INTO tags(desc,count) 
+                VALUES (
+                    :tag ,
+                    (SELECT (count + 1 ) FROM tags WHERE desc = :tag)
+                );
+                ")->execute([':tag' => $tag ]);
+                
+        $st = $this->pdo->prepare("        
+            UPDATE tags SET count=1 WHERE desc = :tag and count = 0 ;
+            ")->execute([':tag' => $tag ]);
+        
+    }
+        
     public function deleteEntry($id)
     {
         $this->pdo->prepare('

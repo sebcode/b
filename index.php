@@ -6,6 +6,8 @@ if (isset($_GET['configtest'])) {
     $requiredModules = [
         'sqlite3',
         'curl',
+	'db',
+	'mbstring'
     ];
 
     $failed = false;
@@ -69,8 +71,19 @@ try {
     } else {
         $format = false;
     }
+    
+    $orderHashTagsBy = $b->$orderHashTagsBy;
+    if (!empty($_GET['ordertagsby'])) {
+        // "count" | "desc"
+        $orderHashTagsBy = $_GET['ordertagsby'];
+        $b->$orderHashTagsBy = $orderHashTagsBy;
+    } 
+
 
     $entries = $b->getDB()->getEntries($filter, $skip, $count);
+
+    $hashTags = $b->getDB()->getHashTagsTable($orderHashTagsBy);
+
 
     if ($format === 'json') {
         header('Content-Type: application/json; charset=utf-8');
@@ -79,9 +92,10 @@ try {
     }
 
     if ($format === 'html') {
-        dumpEntries($entries);
+        dumpEntries($entries);        
         exit();
     }
+    
 } catch (\Exception $e) {
     if (($code = $e->getCode()) && is_numeric($code)) {
         http_response_code($code);
@@ -106,6 +120,20 @@ function dumpEntries($entries)
   <?php
   }
 }
+
+function dumpHashTags($hashTags) 
+{ 
+    
+    //var_dump($hashTags);
+    
+    foreach ($hashTags as $hashTag ) {
+    ?>
+	     <div class="hashtag"><?php echo BookmarkManager::formatListHashTag($hashTag['desc'],$hashTag['count']); ?></div>	
+    <?php
+    }
+}
+
+
 
 ?>
 <!DOCTYPE html>
@@ -134,13 +162,36 @@ function dumpEntries($entries)
       name="query"
       placeholder=""
       value="<?php echo htmlspecialchars($filter); ?>"
-    />
+    />    
   </form>
 </div>
 
 <?php dumpEntries($entries); ?>
 
 </div>
+
+<div id="hashtagscontent">
+    <div class="sorttagscheckbox">
+        <div style="float:left;width:20%">
+            <form id="sortform">        
+                <input id="ordertagsbycheckbox" 
+                type="checkbox"         
+                name="ordertagsby"
+                <?php if ($orderHashTagsBy === "count" ) { echo "checked" ; } ?>
+                />
+            </form>
+        </div>
+        <div style="float:left;width=80%">
+            <label for="ordertagsbycheckbox">Sortiere n. Anzahl</label>
+        </div>
+    </div>
+    <div style="width:100%;" >
+    <?php dumpHashTags($hashTags); ?>
+    </div>
+    
+</div>
+
+
 
 <script>
 window.filter = <?php echo $filter ? json_encode($filter) : "''"; ?>
@@ -156,7 +207,19 @@ window.infiniteScrolling = <?php echo $step; ?>
 (function () {
   window.onload = function() {
     const queryEl = document.getElementById('query')
-    queryEl.value = <?php echo (json_encode(!empty($_GET['add']) ? $_GET['add'] : (string)$filter)); ?>
+    const checkboxEl = document.getElementById('ordertagsbycheckbox');
+/*
+    <?php if (!empty($_GET['ordertagsby']) && $_GET['ordertagsby'] === "count" ): ?>
+          checkboxEl.value="count" 
+          checkboxEl.checked="true"
+         // queryEl.value = <?php echo (json_encode(!empty($_GET['add']) ? $_GET['add'] : (string)$filter."&ordertagsby=count")); ?>
+    <?php else: ?>
+          checkboxEl.value="desc" 
+          checkboxEl.checked="false"
+          // queryEl.value = <?php echo (json_encode(!empty($_GET['add']) ? $_GET['add'] : (string)$filter."&ordertagsby=desc")); ?>
+    <?php endif ?>          
+*/
+    queryEl.value = <?php echo (json_encode(!empty($_GET['add']) ? $_GET['add'] : (string)$filter)); ?> */
 
     /* Place cursor at end of query text.
      * https://stackoverflow.com/a/10576409 */
@@ -170,6 +233,7 @@ window.infiniteScrolling = <?php echo $step; ?>
     /* Remove query string from URL */
     history.replaceState({}, null, window.location.pathname)
     <?php endif; ?>
+    
   }
 }())
 
