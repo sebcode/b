@@ -3,6 +3,7 @@
   const formEl = document.getElementById('filterform')
   const queryEl = document.getElementById('query')
   const checkboxEl = document.getElementById('ordertagsbycheckbox');
+  const hiddenfilterEl = document.getElementById('hiddenfilter');
   const sortformEl = document.getElementById('sortform')
 
   async function request(data) {
@@ -142,9 +143,10 @@
       } else {
         checkboxEl.value="desc"        
       }      
-      let filter=queryEl.value
-      sortformEl.submit()
-      queryEl.value=filter
+                 
+      hiddenfilterEl.value=queryEl.value
+      
+      sortformEl.submit()                  
       return false
   })
 

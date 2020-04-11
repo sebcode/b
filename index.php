@@ -123,7 +123,6 @@ function dumpEntries($entries)
 
 function dumpHashTags($hashTags) 
 { 
-    
     //var_dump($hashTags);
     
     foreach ($hashTags as $hashTag ) {
@@ -132,7 +131,6 @@ function dumpHashTags($hashTags)
     <?php
     }
 }
-
 
 
 ?>
@@ -172,23 +170,23 @@ function dumpHashTags($hashTags)
 
 <div id="hashtagscontent">
     <div class="sorttagscheckbox">
-        <div style="float:left;width:20%">
+        <div style="float:left;width:10%">
             <form id="sortform">        
                 <input id="ordertagsbycheckbox" 
                 type="checkbox"         
                 name="ordertagsby"
-                <?php if ($orderHashTagsBy === "count" ) { echo "checked" ; } ?>
+                <?php if ($orderHashTagsBy === "count" ) { echo "checked" ; } ?>                
                 />
+                <input id="hiddenfilter" type="hidden" name="filter" value="<?php echo htmlspecialchars($filter); ?>" />
             </form>
         </div>
-        <div style="float:left;width=80%">
-            <label for="ordertagsbycheckbox">Sortiere n. Anzahl</label>
+        <div style="float:left;width=90%">
+            <label for="ordertagsbycheckbox">Sort by number</label>
         </div>
     </div>
     <div style="width:100%;" >
     <?php dumpHashTags($hashTags); ?>
-    </div>
-    
+    </div>    
 </div>
 
 
