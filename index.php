@@ -217,7 +217,7 @@ window.infiniteScrolling = <?php echo $step; ?>
           // queryEl.value = <?php echo (json_encode(!empty($_GET['add']) ? $_GET['add'] : (string)$filter."&ordertagsby=desc")); ?>
     <?php endif ?>          
 */
-    queryEl.value = <?php echo (json_encode(!empty($_GET['add']) ? $_GET['add'] : (string)$filter)); ?> */
+    queryEl.value = <?php echo (json_encode(!empty($_GET['add']) ? $_GET['add'] : (string)$filter)); ?>
 
     /* Place cursor at end of query text.
      * https://stackoverflow.com/a/10576409 */
