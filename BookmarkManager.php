@@ -38,11 +38,13 @@ class BookmarkManager
             throw new \Exception('baseUri not defined in config.php');
         }
 
-        $baseUri = rtrim($this->config['baseUri'], '/').'/';
+        $baseUri = rtrim($this->config['baseUri'], '/');
 
-        if (strpos($requestUri, $baseUri) !== 0) {
+        if (strpos($requestUri, $baseUri) !== 0) {            
             throw new \Exception('invalid baseuri');
         }
+                
+        $baseUri=$baseUri.'/';
 
         /* cut baseUri from request uri */
         $this->requestUri = substr($requestUri, strlen($baseUri));
@@ -59,8 +61,16 @@ class BookmarkManager
         }
 
         $user = $uriParts[0];
-
-        if (!preg_match('@^[a-z0-9]+$@i', $user)) {
+        
+        if (!preg_match('@^[a-z0-9]+$@i', $user)) {            
+            
+            /*Redirect to authenticated user's name folder:*/            
+            if (isset($_SERVER['PHP_AUTH_USER'])) {
+                $redirect_header="Location: ".$_SERVER['REQUEST_SCHEME']."://".$_SERVER['HTTP_HOST'].$baseUri.$_SERVER['PHP_AUTH_USER']; 
+                header($redirect_header);
+                exit();
+            }
+                                                
             throw new \Exception('Page not found', 404);
         }
 

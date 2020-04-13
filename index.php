@@ -2,6 +2,7 @@
 
 namespace B;
 
+
 if (isset($_GET['configtest'])) {
     $requiredModules = [
         'sqlite3',
@@ -32,6 +33,7 @@ if (isset($_GET['configtest'])) {
 require_once 'BookmarkManager.php';
 
 try {
+ 
     $b = new BookmarkManager($_SERVER['REQUEST_URI']);
 
     if ($b->subPage === 'bookmarklet') {
@@ -131,7 +133,6 @@ function dumpHashTags($hashTags)
     <?php
     }
 }
-
 
 ?>
 <!DOCTYPE html>
