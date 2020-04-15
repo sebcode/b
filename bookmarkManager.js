@@ -2,6 +2,9 @@
   const contentEl = document.getElementById('content')
   const formEl = document.getElementById('filterform')
   const queryEl = document.getElementById('query')
+  const checkboxEl = document.getElementById('ordertagsbycheckbox');
+  const hiddenfilterEl = document.getElementById('hiddenfilter');
+  const sortformEl = document.getElementById('sortform')
 
   async function request(data) {
     const res = await fetch('', {
@@ -133,18 +136,37 @@
       setLink(id, ret)
     }
   })
+  
+  checkboxEl.addEventListener('click', e => {
+      if ( checkboxEl.checked ){
+        checkboxEl.value="count"         
+      } else {
+        checkboxEl.value="desc"        
+      }      
+                 
+      hiddenfilterEl.value=queryEl.value
+      
+      sortformEl.submit()                  
+      return false
+  })
 
   formEl.addEventListener('submit', e => {
     const query = queryEl.value
-
+        
     e.preventDefault()
 
     if (query.indexOf('http:') === 0 || query.indexOf('https:') === 0) {
       addUrl(query)
       return false
     }
-
-    document.location.href = '?filter=' + encodeURIComponent(query)
+    
+    if ( checkboxEl.checked ){
+        checkboxEl.value="count"        
+    } else {
+        checkboxEl.value="desc"        
+    }    
+    
+    document.location.href = '?filter=' + encodeURIComponent(query) + '&ordertagsby=' + encodeURIComponent(checkboxEl.value)
 
     return false
   })
@@ -162,7 +184,7 @@
 
     const url =
       `?filter=${encodeURIComponent(window.filter)}` +
-      `&format=html&count=${ifStep}&skip=${ifSkip}`
+      `&format=html&count=${ifStep}&skip=${ifSkip}&ordertagsby=${checkboxEl.value}`
     const res = await fetch(url, { credentials: 'include' })
     const text = await res.text()
 

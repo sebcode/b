@@ -7,28 +7,67 @@ html {
 }
 
 body {
-  background-color: #fff;
+  /*background-color: #fff;*/
+  background-color: white;
   margin: 10px;
 }
 
 a {
-  color: #2F2318;
+  /*color: #2F2318;*/
+  color: black;
 }
 
 a.hash {
-  color: #6979A8;
+  /*color: #6979A8;*/
+  color: blue;
 }
 
 a.link {
-  color: #869DD4;
+  /*color: #869DD4;*/
+  color: green;
 }
 
 #content {
-  margin-left: auto;
+  float: left;
+  width: 70%;
+  margin-left: 3%;
   margin-right: auto;
-  min-width: 800px;
+  min-width: 300px;
   max-width: 1000px;
 }
+
+
+/*** hash tag list ***/
+
+#hashtagscontent {
+    float: right;
+    width: 20%;
+    margin-left: auto;
+    margin-right: 3%;
+    min-width: 100px;
+    max-width: 600px;
+}
+
+.hashtag {
+  display: block;
+  padding-bottom: 5px;
+  padding-top: 5px;
+  
+}
+
+.hashtaglink {
+  /*color: #6979A8*/
+  color: blue;
+}
+
+.sorttagscheckbox {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-bottom: 20px;
+}
+
+
 
 /*** header ***/
 
@@ -67,19 +106,27 @@ input {
 }
 
 .entry .link {
-  color: #ccc;
+  /*color: #ccc;*/
+  color: a.link.color;
   word-wrap: break-word;
   font-size: smaller;
 }
 
 /*** responsive ***/
 
+
 @media (max-width: 800px) {
 
   #content {
+/**
     min-width: 100%;
     max-width: 100%;
+**/
+    min-width: 70%;
+    max-width: 80%;
   }
 
 }
+
+
 
