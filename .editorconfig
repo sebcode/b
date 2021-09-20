@@ -1,4 +1,3 @@
-
 root = true
 
 [*]
@@ -6,6 +5,7 @@ indent_style = space
 charset = utf-8
 end_of_line = lf
 insert_final_newline = true
+indent_size = 2
 
 [*.{js,css}]
 indent_size = 2
@@ -13,3 +13,6 @@ indent_size = 2
 [*.php]
 indent_size = 4
 
+[Makefile]
+indent_style = tab
+indent_size = 4

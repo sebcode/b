@@ -2,20 +2,26 @@
 
 namespace B;
 
-require_once 'DB.php';
-
 class BookmarkManager
 {
-    protected $config;
-    protected $db;
-    protected $user;
-    protected $baseDir;
-    public $requestUri;
-    public $subPage;
+    protected array $config;
+    protected DB $db;
+    protected string $user;
+    protected string $baseDir;
+    public string $requestUri;
+    public string $subPage = '';
 
-    public function __construct($requestUri = '/')
+    public function __construct(string $requestUri = '/')
     {
-        $this->config = require __DIR__.'/config.php';
+        $getEnv = function (string $key): ?string {
+            return getenv($key) !== false ? (string)getenv($key) : null;
+        };
+
+        $this->config = [
+            'baseDir' => $getEnv('BASE_DIR') ?? '/app/db/',
+            'baseUri' => $getEnv('BASE_URI') ?? '/',
+            'infiniteScrolling' => $getEnv('INFINITE_SCROLLING') ?? false,
+        ];
 
         if (empty($this->config['baseDir'])) {
             throw new \Exception('baseDir not defined in config.php');
@@ -76,43 +82,43 @@ class BookmarkManager
         $this->db = new DB($this->baseDir.$user.'/b.db');
     }
 
-    public function getConfig($key)
+    public function getConfig(string $key): mixed
     {
         if (isset($this->config[$key])) {
             return $this->config[$key];
         }
 
-        return false;
+        return null;
     }
 
-    public function getDB()
+    public function getDB(): DB
     {
         return $this->db;
     }
 
-    public function handleAjaxRequest($postData)
+    public function handleAjaxRequest(array $postData): void
     {
         if (empty($postData['action'])) {
             return;
         }
 
-        $action = $postData['action'];
+        $action = (string)$postData['action'];
         $error = true;
         $result = [];
 
         if (!empty($postData['id'])) {
-            $id = $postData['id'];
+            $id = (int)$postData['id'];
             $result['id'] = $id;
         } else {
-            $id = false;
+            $id = 0;
         }
 
         try {
             switch ($action) {
             case 'add':
-                $result['url'] = $postData['url'];
+                $result['url'] = (string)$postData['url'];
                 $result['force'] = $postData['force'] ? true : false;
-                @list($url, $desc) = @explode(' ', $postData['url'], 2);
+                list($url, $desc) = array_pad(explode(' ', (string)$postData['url'], 2), 2, '');
                 $this->addBookmark($url, $desc, !empty($postData['force']));
                 $error = false;
                 break;
@@ -126,24 +132,24 @@ class BookmarkManager
 
             case 'settitle':
                 if ($id && !empty($postData['title'])) {
-                    $this->db->setTitle($id, $postData['title']);
+                    $this->db->setTitle($id, (string)$postData['title']);
                     $error = false;
-                    $result['title'] = self::formatDesc($postData['title'], false);
-                    $result['rawTitle'] = $postData['title'];
-                    $result['tags'] = self::formatTags($postData['title']);
+                    $result['title'] = self::formatDesc((string)$postData['title'], false);
+                    $result['rawTitle'] = (string)$postData['title'];
+                    $result['tags'] = self::formatTags((string)$postData['title']);
                 }
                 break;
 
             case 'setlink':
                 if ($id && !empty($postData['link'])) {
-                    $this->db->setLink($id, $postData['link']);
+                    $this->db->setLink($id, (string)$postData['link']);
                     $error = false;
-                    $result['link'] = $postData['link'];
+                    $result['link'] = (string)$postData['link'];
                 }
                 break;
 
             default:
-                return false;
+                return;
             }
         } catch (\Exception $e) {
             $result['message'] = $e->getMessage();
@@ -161,7 +167,7 @@ class BookmarkManager
         exit();
     }
 
-    public function addBookmark($url, $appendDesc = '', $force = false)
+    public function addBookmark(string $url, string $appendDesc = '', bool $force = false): bool
     {
         if ($this->db->exists($url)) {
             throw new \Exception('Bookmark already exists.');
@@ -184,7 +190,7 @@ class BookmarkManager
         return $this->db->add($desc, $url);
     }
 
-    private function fetch($url)
+    private function fetch(string $url): string
     {
         if (($h = curl_init($url)) === false) {
             throw new \Exception('could not init curl');
@@ -197,10 +203,10 @@ class BookmarkManager
             throw new \Exception('could not fetch');
         }
 
-        return $ret;
+        return (string)$ret;
     }
 
-    public static function extractTitle($body)
+    public static function extractTitle(string $body): string
     {
         if (!preg_match('@<title>([^<]+)@', $body, $m)) {
             return '(unknown title)';
@@ -219,7 +225,7 @@ class BookmarkManager
         return $ret;
     }
 
-    public static function formatDesc($desc, $withTags = true)
+    public static function formatDesc(string $desc, bool $withTags = true): string
     {
         $desc = htmlspecialchars($desc);
 
@@ -239,7 +245,7 @@ class BookmarkManager
         return trim($desc);
     }
 
-    public static function formatTags($desc)
+    public static function formatTags(string $desc): string
     {
         $tags = '';
         $desc = htmlspecialchars($desc);
@@ -255,7 +261,7 @@ class BookmarkManager
         return $tags;
     }
 
-    public static function formatTagLink($tag)
+    public static function formatTagLink(string $tag): string
     {
         return '<a class="hash" href="?filter='.rawurlencode($tag).'">'.$tag.'</a>';
     }

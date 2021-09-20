@@ -2,6 +2,8 @@
 
 namespace B;
 
+require_once __DIR__.'/../vendor/autoload.php';
+
 if (isset($_GET['configtest'])) {
     $requiredModules = [
         'sqlite3',
@@ -26,8 +28,6 @@ if (isset($_GET['configtest'])) {
     echo 'OK.';
     exit();
 }
-
-require_once 'BookmarkManager.php';
 
 try {
     $b = new BookmarkManager($_SERVER['REQUEST_URI']);
@@ -118,7 +118,7 @@ function dumpEntries($entries)
   <meta name="google" content="notranslate">
   <title>b</title>
 
-  <link rel="stylesheet" href="vendor/normalize.css"/>
+  <link rel="stylesheet" href="normalize.css"/>
   <link rel="stylesheet" href="style.css"/>
 </head>
 

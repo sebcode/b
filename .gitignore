@@ -1,1 +1,4 @@
-config.php
+vendor
+.env
+.phpunit.result.cache
+/db

@@ -54,9 +54,6 @@ input {
   font-size: smaller;
 }
 
-.entry:hover {
-}
-
 .entry .title {
   width: 100%;
   cursor: pointer;

@@ -1,8 +1,8 @@
 <?php
 
-require_once realpath(dirname(__FILE__).'/../').'/BookmarkManager.php';
+use PHPUnit\Framework\TestCase;
 
-class BookmarkManagerTest extends PHPUnit_Framework_TestCase
+class BookmarkManagerTest extends TestCase
 {
     public function test_extractTitle()
     {

@@ -1,0 +1,16 @@
+version: '3.3'
+
+services:
+  app:
+    build: .
+    volumes:
+      - "./:/app:delegated"
+      - "./conf/apache-extra.conf:/etc/apache2/conf-enabled/extra.conf"
+    ports:
+      - "127.0.0.1:9090:80"
+    user: "${USERID}:${GID}"
+    environment:
+      - APACHE_RUN_USER=#${USERID}
+      - APACHE_RUN_GROUP=#${GID}
+      - INFINITE_SCROLLING
+    working_dir: /app

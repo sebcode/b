@@ -1,0 +1,5 @@
+<psalm>
+  <projectFiles>
+    <directory name="src"/>
+  </projectFiles>
+</psalm>

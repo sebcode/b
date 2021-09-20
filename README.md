@@ -12,65 +12,30 @@ Bookmarks are stored in a sqlite database. Features:
 
 ### Requirements
 
- * PHP 5.6+
- * PHP module sqlite
- * PHP module curl
+ * make
+ * docker + docker compose
 
-### Configuration instructions
+Tested on Ubuntu 21.04 and macOS Big Sur.
 
- * Copy all repository files to a directory accessible by the webserver-user,
-   like `/var/www/b`
- * Move `config.template.php` to `config.php` and edit it
-   * `baseDir` is the directory where the sqlite dbs are stored, e.g.
-     `/var/bookmarks/`. The directory must be readable and writeable by the
-     webserver-user
-   * `baseUri` is the base uri's relative path param, e.g. `/b/` if the website
-     is accessible via `http://example.com/b/`. Or use `/` for
-     `http://bookmarks.example.com/` for example, if you want to have a
-     dedicated subdomain for the service.
- * Create a new user-account simply by creating a new directory in `baseDir`:
-   `mkdir /var/bookmarks/peter/`
+### Setup
 
-#### Webserver configuration example for apache
+This web app uses HTTP basic auth password protection. Create a `htusers` file
+and specify username/password like this:
 
- * If you want your bookmarks to be accessible under their own subdomain like
-   `http://bookmarks.example.com/`, add a virtual host to your `httpd.conf`:
+    mkdir db
+    ./htpasswd -c db/htusers peter
 
-        <VirtualHost *:80>
-          ServerName bookmarks.example.com
-          DocumentRoot "/var/www/b"
+The bookmark manager can host multiple databases. To initialize a new database,
+simply create a subdirectory:
 
-          <Directory />
-            RewriteEngine On
-            RewriteBase /
-            RewriteCond %{REQUEST_FILENAME} !-f
-            RewriteCond %{REQUEST_FILENAME} !-d
-            RewriteRule . index.php [L]
+    mkdir db/peter
 
-            # Password protection            
-            AuthType Basic
-            AuthName b
-            AuthUserFile /opt/bookmarks/htusers
-            Require user peter
-          </Directory>
-        </VirtualHost>
+This will make bookmarks accessible via `http://localhost:9090/peter`.
 
- * Create a password file and restart apache. If you don't want to use a
-   password, remove the "Password protection" part from the virtual host
-   configuration.
+Use `make` to start the webserver container and `make down` to stop it.
 
-        htpasswd -c /opt/bookmarks/htusers peter
-        apachectl restart
-
- * If you want to use a localhost fake domain, add the host to your
-   `/etc/hosts` file:
-
-        127.0.0.1 bookmarks.example.com
-
- * Peter's bookmarks should now be accessible via
-   `http://bookmarks.example.com/peter`
- * Run a configuration-check via
-   `http://bookmarks.example.com/index.php?configtest`
+To prevent forking the container into the background, use `make up` instead of
+`make` (useful for debugging).
 
 ### How to use
 
@@ -89,11 +54,11 @@ Bookmarks are stored in a sqlite database. Features:
 ### Infinite scrolling
 
 If you have a massive amount of bookmarks and you don't want to load them all at
-once, you can activate infinite scrolling. This will load a limited amount on
+once, you can activate infinite scrolling. This will load a limited amount of
 bookmarks initially and load more when you scroll to the bottom of the page.
-Activate infinite scrolling by adding `'infiniteScrolling' => 200` to your
-`config.php`. Replace `200` with the number of bookmarks you want to load each
-time you hit the bottom.
+Activate infinite scrolling by adding `INFINITE_SCROLLING=200` to `.env`.
+Replace `200` with the number of bookmarks you want to load each time you hit
+the bottom.
 
 ### Bookmarklet
 
@@ -103,7 +68,7 @@ suggestion!)
 
 ### Credits
 
-Copyright (c) 2011-2017 Sebastian Volland http://github.com/sebcode
+Copyright (c) 2011-2021 Sebastian Volland http://github.com/sebcode
 
 The source code is licensed under the terms of the MIT license (see LICENSE
 file).

@@ -4,9 +4,9 @@ namespace B;
 
 class DB
 {
-    protected $pdo;
+    protected \PDO $pdo;
 
-    public function __construct($file = '')
+    public function __construct(string $file = '')
     {
         $new = !file_exists($file);
 
@@ -19,7 +19,7 @@ class DB
         }
     }
 
-    private function createTables()
+    private function createTables(): void
     {
         $this->pdo->prepare("
             CREATE TABLE b (
@@ -31,7 +31,7 @@ class DB
         ")->execute();
     }
 
-    public function add($desc, $link)
+    public function add(string $desc, string $link): bool
     {
         $this->pdo->prepare('
             INSERT INTO b (desc, link) VALUES (:desc, :link)
@@ -43,7 +43,7 @@ class DB
         return true;
     }
 
-    public function exists($link)
+    public function exists(string $link): bool
     {
         $st = $this->pdo->prepare('
             SELECT id FROM b
@@ -55,22 +55,19 @@ class DB
         return (bool) $st->fetch();
     }
 
-    public function getEntries($filter = false, $skip = false, $count = false)
+    public function getEntries(?string $filter = null, bool $skip = false, bool $count = false): array
     {
-        if (!$filter) {
-            $filter = '%';
-        }
-
         if ($skip !== false && $count !== false) {
             $limit = 'LIMIT :skip, :count';
         } else {
             $limit = '';
         }
 
-        if ($filter) {
+        $where = [];
+        $args = [];
+
+        if ($filter !== null) {
             $queryParts = explode(' ', $filter);
-            $where = [];
-            $args = [];
             foreach ($queryParts as $i => $part) {
                 $where[] = "desc LIKE :filter$i";
                 $args[":filter$i"] = '%'.$part.'%';
@@ -99,7 +96,7 @@ class DB
         return $ret;
     }
 
-    public function deleteEntry($id)
+    public function deleteEntry(int $id): bool
     {
         $this->pdo->prepare('
             DELETE FROM b WHERE id = :id
@@ -110,7 +107,7 @@ class DB
         return true;
     }
 
-    public function setTitle($id, $title)
+    public function setTitle(int $id, string $title): bool
     {
         $this->pdo->prepare('
             UPDATE b SET desc = :desc WHERE id = :id
@@ -122,7 +119,7 @@ class DB
         return true;
     }
 
-    public function setLink($id, $link)
+    public function setLink(int $id, string $link): bool
     {
         $this->pdo->prepare('
             UPDATE b SET link = :link WHERE id = :id
