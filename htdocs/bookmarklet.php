@@ -1,7 +1,6 @@
 <?php
 
-$config = require(__DIR__.'/config.php');
-$baseUri = '/' . trim($config['baseUri'], '/');
+$baseUri = '/' . trim(getenv('BASE_URI'), '/');
 if ($baseUri !== '/') {
     $baseUri .= '/';
 }

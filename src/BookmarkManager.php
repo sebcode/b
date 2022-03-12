@@ -24,27 +24,17 @@ class BookmarkManager
             'infiniteScrolling' => $getEnv('INFINITE_SCROLLING') ?? false,
         ];
 
-        if (empty($this->config['baseDir'])) {
-            throw new \Exception('baseDir not defined in config.php');
-        }
-
         $this->baseDir = $this->config['baseDir'];
 
         if (!is_dir($this->baseDir)) {
-            throw new \Exception('invalid baseDir in config.php');
+            throw new \Exception('invalid baseDir: ' . $this->baseDir);
         }
 
         if (!is_writeable($this->baseDir)) {
-            throw new \Exception('baseDir in config.php not writeable');
+            throw new \Exception('baseDir not writeable: ' . $this->baseDir);
         }
 
-        $this->baseDir = rtrim($this->baseDir, '/').'/';
-
-        if (empty($this->config['baseUri'])) {
-            throw new \Exception('baseUri not defined in config.php');
-        }
-
-        $baseUri = rtrim($this->config['baseUri'], '/').'/';
+        $baseUri = $this->config['baseUri'];
 
         if (strpos($requestUri, $baseUri) !== 0) {
             throw new \Exception('invalid baseuri');
