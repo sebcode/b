@@ -25,4 +25,3 @@ EOF;
 Drag this to your bookmarks bar:
 
 <a href="javascript:<?php echo rawurlencode($script); ?>">Bookmark</a>
-

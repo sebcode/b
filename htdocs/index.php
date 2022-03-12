@@ -10,7 +10,7 @@ try {
     if ($b->subPage === 'bookmarklet') {
         include __DIR__.'/bookmarklet.php';
         exit();
-    } else if ($b->subPage) {
+    } elseif ($b->subPage) {
         throw new \Exception('Page not found', 404);
     }
 
@@ -70,16 +70,15 @@ try {
 
 function dumpEntries($entries)
 {
-  foreach ($entries as $entry) {
-  ?>
-    <div class="entry" id="entry_<?php echo $entry['id']; ?>" data-id="<?php echo $entry['id']; ?>" data-title="<?php echo htmlspecialchars($entry['desc']); ?>">
-      <div class="title"><?php echo BookmarkManager::formatDesc($entry['desc'], false); ?></div>
-      <a class="link" target="_blank" href="<?php echo htmlspecialchars($entry['link']); ?>"><?php echo htmlspecialchars($entry['link']);  ?></a>
-      <div class="tags"><?php echo BookmarkManager::formatTags($entry['desc']); ?></div>
-    </div>
-
-  <?php
-  }
+    foreach ($entries as $entry) {
+        ?>
+        <div class="entry" id="entry_<?php echo $entry['id']; ?>" data-id="<?php echo $entry['id']; ?>" data-title="<?php echo htmlspecialchars($entry['desc']); ?>">
+            <div class="title"><?php echo BookmarkManager::formatDesc($entry['desc'], false); ?></div>
+            <a class="link" target="_blank" href="<?php echo htmlspecialchars($entry['link']); ?>"><?php echo htmlspecialchars($entry['link']); ?></a>
+            <div class="tags"><?php echo BookmarkManager::formatTags($entry['desc']); ?></div>
+        </div>
+        <?php
+    }
 }
 
 ?>
@@ -131,7 +130,7 @@ window.infiniteScrolling = <?php echo $step; ?>
 (function () {
   window.onload = function() {
     const queryEl = document.getElementById('query')
-    queryEl.value = <?php echo (json_encode(!empty($_GET['add']) ? $_GET['add'] : (string)$filter)); ?>
+    queryEl.value = <?php echo json_encode(!empty($_GET['add']) ? $_GET['add'] : (string)$filter); ?>
 
     /* Place cursor at end of query text.
      * https://stackoverflow.com/a/10576409 */
@@ -152,4 +151,3 @@ window.infiniteScrolling = <?php echo $step; ?>
 
 </body>
 </html>
-
