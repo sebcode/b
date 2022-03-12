@@ -1,6 +1,6 @@
 <?php
 
-namespace B;
+use B\BookmarkManager;
 
 require_once __DIR__.'/../vendor/autoload.php';
 
