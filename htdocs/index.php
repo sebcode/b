@@ -27,7 +27,7 @@ try {
 
     $skip = false;
     $count = $b->getConfig('infiniteScrolling');
-    if ($count !== false) {
+    if ($count !== null) {
         $skip = 0;
     }
 

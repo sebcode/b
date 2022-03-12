@@ -55,9 +55,9 @@ class DB
         return (bool) $st->fetch();
     }
 
-    public function getEntries(?string $filter = null, bool $skip = false, bool $count = false): array
+    public function getEntries(?string $filter = null, ?int $skip = null, ?int $count = null): array
     {
-        if ($skip !== false && $count !== false) {
+        if ($skip !== null && $count !== null) {
             $limit = 'LIMIT :skip, :count';
         } else {
             $limit = '';
@@ -84,7 +84,7 @@ class DB
             $limit
         ");
 
-        if ($skip !== false && $count !== false) {
+        if ($skip !== null && $count !== null) {
             $args['skip'] = $skip;
             $args['count'] = $count;
         }

@@ -4,6 +4,7 @@ namespace B;
 
 class BookmarkManager
 {
+    /** @var Array<?string> */
     protected array $config;
     protected DB $db;
     protected string $user;
@@ -21,7 +22,7 @@ class BookmarkManager
         $this->config = [
             'baseDir' => $getEnv('BASE_DIR') ?? '/app/db/',
             'baseUri' => $getEnv('BASE_URI') ?? '/',
-            'infiniteScrolling' => $getEnv('INFINITE_SCROLLING') ?? false,
+            'infiniteScrolling' => $getEnv('INFINITE_SCROLLING') ?? null,
         ];
 
         $this->baseDir = $this->config['baseDir'];
@@ -73,7 +74,7 @@ class BookmarkManager
         $this->db = new DB($this->baseDir.$user.'/b.db');
     }
 
-    public function getConfig(string $key): mixed
+    public function getConfig(string $key): ?string
     {
         if (isset($this->config[$key])) {
             return $this->config[$key];
