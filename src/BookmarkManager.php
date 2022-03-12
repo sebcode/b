@@ -14,7 +14,8 @@ class BookmarkManager
     public function __construct(string $requestUri = '/')
     {
         $getEnv = function (string $key): ?string {
-            return getenv($key) !== false ? (string)getenv($key) : null;
+            $value = getenv($key);
+            return $value !== false ? $value : null;
         };
 
         $this->config = [
