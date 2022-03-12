@@ -4,31 +4,6 @@ namespace B;
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-if (isset($_GET['configtest'])) {
-    $requiredModules = [
-        'sqlite3',
-        'curl',
-    ];
-
-    $failed = false;
-
-    header('Content-type: text/plain');
-
-    foreach ($requiredModules as $module) {
-        if (!extension_loaded($module)) {
-            echo "PHP module missing: $module \n";
-            $failed = true;
-        }
-    }
-
-    if ($failed) {
-        exit(1);
-    }
-
-    echo 'OK.';
-    exit();
-}
-
 try {
     $b = new BookmarkManager($_SERVER['REQUEST_URI']);
 
