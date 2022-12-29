@@ -1,4 +1,8 @@
-<psalm>
+<psalm
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="https://getpsalm.org/schema/config"
+  xsi:schemaLocation="https://getpsalm.org/schema/config tools/psalm/vendor/vimeo/psalm/config.xsd"
+  phpVersion="8.2">
   <projectFiles>
     <directory name="src"/>
   </projectFiles>
