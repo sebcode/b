@@ -2,6 +2,9 @@
   const contentEl = document.getElementById('content')
   const formEl = document.getElementById('filterform')
   const queryEl = document.getElementById('query')
+  const dataEl = document.querySelector('[data-b]')
+
+  const page = JSON.parse(dataEl.dataset.b)
 
   async function request(data) {
     const res = await fetch('', {
@@ -11,8 +14,7 @@
       credentials: 'include'
     })
 
-    const text = await res.text()
-    return JSON.parse(text)
+    return await res.json()
   }
 
   async function deleteEntry(id) {
@@ -144,13 +146,13 @@
       return false
     }
 
-    document.location.href = '?filter=' + encodeURIComponent(query)
+    document.location.href = `?${new URLSearchParams({ filter: query })}`
 
     return false
   })
 
   let loadingMore = false
-  let ifStep = window.infiniteScrolling
+  let ifStep = page.infiniteScrolling
   let ifSkip = ifStep
 
   async function loadMore() {
@@ -160,9 +162,12 @@
 
     loadingMore = true
 
-    const url =
-      `?filter=${encodeURIComponent(window.filter)}` +
-      `&format=html&count=${ifStep}&skip=${ifSkip}`
+    const url = `?${new URLSearchParams({
+      filter: page.filter,
+      format: 'html',
+      count: ifStep,
+      skip: ifSkip,
+    })}`
     const res = await fetch(url, { credentials: 'include' })
     const text = await res.text()
 
@@ -175,7 +180,24 @@
     loadingMore = false
   }
 
-  if (window.infiniteScrolling) {
+  window.addEventListener('load', () => {
+    queryEl.value = page.add || page.filter
+
+    /* Place cursor at end of query text.
+     * https://stackoverflow.com/a/10576409 */
+    queryEl.addEventListener('focus', e => {
+      setTimeout(() => { queryEl.selectionStart = queryEl.selectionEnd = 10000 }, 0)
+    })
+
+    queryEl.focus()
+
+    if (page.add) {
+      /* Remove query string from URL */
+      history.replaceState({}, null, window.location.pathname)
+    }
+  })
+
+  if (page.infiniteScrolling) {
     window.addEventListener('scroll', e => {
       const offset =
         document.body.offsetHeight - (window.pageYOffset + window.innerHeight)
