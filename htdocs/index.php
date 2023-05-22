@@ -81,6 +81,14 @@ function dumpEntries($entries)
     }
 }
 
+$pageConfig = [
+    'filter' => $filter ? $filter : '',
+    'infiniteScrolling' => $b->getConfig('infiniteScrolling'),
+    'add' => $_GET['add'] ?? null,
+];
+
+$h = 'htmlspecialchars';
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -99,55 +107,23 @@ function dumpEntries($entries)
 <body>
 
 <div id="content">
+    <div class="header">
+        <form id="filterform">
+            <input id="query"
+            autofocus
+            type="text"
+            name="query"
+            placeholder=""
+            value="<?php echo $h($filter); ?>"
+            />
+        </form>
+    </div>
 
-<div class="header">
-  <form id="filterform">
-    <input id="query"
-      autofocus
-      type="text"
-      name="query"
-      placeholder=""
-      value="<?php echo htmlspecialchars($filter); ?>"
-    />
-  </form>
+    <?php dumpEntries($entries); ?>
 </div>
 
-<?php dumpEntries($entries); ?>
+<div data-b="<?php echo $h(json_encode($pageConfig)) ?>"></div>
 
-</div>
-
-<script>
-window.filter = <?php echo $filter ? json_encode($filter) : "''"; ?>
-
-<?php if ($step = $b->getConfig('infiniteScrolling')): ?>
-window.infiniteScrolling = <?php echo $step; ?>
-<?php endif; ?>
-</script>
 <script src="bookmarkManager.js"></script>
-
-<script>
-
-(function () {
-  window.onload = function() {
-    const queryEl = document.getElementById('query')
-    queryEl.value = <?php echo json_encode(!empty($_GET['add']) ? $_GET['add'] : (string)$filter); ?>
-
-    /* Place cursor at end of query text.
-     * https://stackoverflow.com/a/10576409 */
-    queryEl.addEventListener('focus', e => {
-      setTimeout(() => { queryEl.selectionStart = queryEl.selectionEnd = 10000 }, 0)
-    })
-
-    queryEl.focus()
-
-    <?php if (!empty($_GET['add'])): ?>
-    /* Remove query string from URL */
-    history.replaceState({}, null, window.location.pathname)
-    <?php endif; ?>
-  }
-}())
-
-</script>
-
 </body>
 </html>
