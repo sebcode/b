@@ -2,6 +2,9 @@
 
 namespace B;
 
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+
 class BookmarkManager
 {
     /** @var Array<?string> */
@@ -22,6 +25,7 @@ class BookmarkManager
         $this->config = [
             'baseDir' => $getEnv('BASE_DIR') ?? '/app/db/',
             'baseUri' => $getEnv('BASE_URI') ?? '/',
+            'jwtSecretKey' => $getEnv('JWT_SECRET_KEY') ?? '',
             'infiniteScrolling' => $getEnv('INFINITE_SCROLLING') ?? null,
         ];
 
@@ -45,9 +49,7 @@ class BookmarkManager
         $this->requestUri = substr($requestUri, strlen($baseUri));
 
         /* cut query string from request uri */
-        if (($p = strpos($this->requestUri, '?')) !== false) {
-            $this->requestUri = substr($this->requestUri, 0, $p);
-        }
+        [$this->requestUri] = explode('?', $this->requestUri);
 
         $uriParts = explode('/', trim($this->requestUri, '/'));
 
@@ -69,9 +71,81 @@ class BookmarkManager
             throw new \Exception('User dir not writeable');
         }
 
+        $this->authenticateUser($user);
+
         $this->user = $user;
 
         $this->db = new DB($this->baseDir.$user.'/b.db');
+    }
+
+    protected function authenticateUser($user) {
+        if ($user === ($_SERVER['PHP_AUTH_USER'] ?? '')) {
+            // Apache took care of it.
+            return;
+        }
+
+        // Use password + JWT.
+        $key = $this->config['jwtSecretKey'];
+        if (!$key) {
+            throw new \Exception('JWT_SECRET_KEY not set', 500);
+        }
+
+        $pwd = (string)($_POST['pwd'] ?? '');
+
+        $loginForm = "<form action='' method='post'><input type='password' name='pwd' /><button>Log into B.</button></form>";
+
+        $hashFile = "{$this->baseDir}{$user}/password_hash";
+        if (!is_file($hashFile)) {
+            // Help admin set up a password.
+
+            if ($pwd) {
+                $hash = password_hash($pwd, PASSWORD_BCRYPT);
+                file_put_contents($hashFile, $hash);
+
+                echo $loginForm;
+                exit;
+            }
+
+            echo "<form action='' method='post'><input type='password' name='pwd' /><button>Set up password for B.</button></form>";
+            exit;
+        }
+
+        if ($pwd) {
+            // Trying to log in.
+            $hash = file_get_contents("{$this->baseDir}{$user}/password_hash");
+            $hash = trim($hash);
+
+            if (!password_verify($pwd, $hash)) {
+                throw new \Exception('Bad password.', 400);
+            }
+
+            // Success, put jwt in cookie.
+            $payload = ['sub' => $user];
+            $jwt = JWT::encode($payload, $key, 'HS256');
+
+            $path = $_SERVER['REQUEST_URI'];
+            [$path] = explode('?', $path);
+
+            setcookie('b-jwt', rawurlencode($jwt), 0, $path);
+
+            header("Location: {$path}", 307);
+            exit;
+        }
+
+        // Validate JWT
+        $jwt = rawurldecode((string)($_COOKIE['b-jwt'] ?? ''));
+        try {
+            $decoded = JWT::decode($jwt, new Key($key, 'HS256'));
+            if ($decoded->sub !== $user) {
+                throw new \Exception('Bad password.', 400);
+                exit;
+            }
+        } catch (\Exception $e) {
+            echo $loginForm;
+            exit;
+        }
+
+        // Authenticated.
     }
 
     public function getConfig(string $key): ?string
